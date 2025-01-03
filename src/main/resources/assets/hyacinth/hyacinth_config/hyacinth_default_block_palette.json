@@ -1,0 +1,240 @@
+{
+  "hyacinth:default_pale_green": {
+    "color": 8368696,
+    "name": "Pale Green",
+    "blockstates": [{
+      "block": "minecraft:grass_block"
+    }, {
+      "block": "minecraft:slime_block"
+    }]
+  },
+  "hyacinth:default_pale_yellow": {
+    "color": 16247203,
+    "name": "Pale Yellow",
+    "blockstates": [{
+      "block": "minecraft:sand"
+    }, {
+      "block": "minecraft:sandstone"
+    }, {
+      "block": "minecraft:sandstone_slab"
+    }, {
+      "block": "minecraft:birch_log",
+      "axis": "y"
+    }, {
+      "block": "minecraft:birch_planks"
+    }, {
+      "block": "minecraft:birch_slab"
+    }, {
+      "block": "minecraft:glowstone"
+    }, {
+      "block": "minecraft:end_stone"
+    }, {
+      "block": "minecraft:end_stone_bricks"
+    }, {
+      "block": "minecraft:end_stone_brick_slab"
+    }, {
+      "block": "minecraft:bone_block"
+    }, {
+      "block": "minecraft:birch_pressure_plate"
+    }, {
+      "block": "minecraft:ochre_froglight"
+    }]
+  },
+  "hyacinth:default_white_gray": {
+    "color": 13092807,
+    "name": "White Gray",
+    "blockstates": [{
+      "block": "minecraft:cobweb"
+    }, {
+      "block": "minecraft:mushroom_stem"
+    }, {
+      "block": "minecraft:white_candle"
+    }]
+  },
+  "hyacinth:default_bright_red": {
+    "color": 16711680,
+    "name": "Bright Red",
+    "blockstates": [{
+      "block": "minecraft:tnt"
+    }, {
+      "block": "minecraft:redstone_block"
+    }]
+  },
+  "hyacinth:default_pale_purple": {
+    "color": 10526975,
+    "name": "Pale Purple",
+    "blockstates": [{
+      "block": "ice"
+    }, {
+      "block": "minecraft:packed_ice"
+    }, {
+      "block": "minecraft:blue_ice"
+    }]
+  },
+  "hyacinth:default_iron_gray": {
+    "color": 10987431,
+    "name": "Iron Gray",
+    "blockstates": [{
+      "block": "minecraft:iron_block"
+    }, {
+      "block": "minecraft:iron_trapdoor"
+    }, {
+      "block": "minecraft:heavy_weighted_pressure_plate"
+    }, {
+      "block": "minecraft:brewing_stand"
+    }]
+  },
+  "hyacinth:default_dark_green": {
+    "color": 31744,
+    "name": "Dark Green",
+    "blockstates": [{
+      "block": "minecraft:oak_leaves"
+    }, {
+      "block": "minecraft:spruce_leaves"
+    }, {
+      "block": "minecraft:birch_leaves"
+    }, {
+      "block": "minecraft:jungle_leaves"
+    }, {
+      "block": "minecraft:acacia_leaves"
+    }, {
+      "block": "minecraft:dark_oak_leaves"
+    }, {
+      "block": "minecraft:azalea_leaves"
+    }, {
+      "block": "minecraft:bamboo_block",
+      "axis": "x"
+    }]
+  },
+  "hyacinth:default_white": {
+    "color": 16777215,
+    "name": "White",
+    "blockstates": [{
+      "block": "minecraft:white_wool"
+    }, {
+      "block": "minecraft:white_carpet"
+    }, {
+      "block": "minecraft:white_stained_glass"
+    }, {
+      "block": "minecraft:white_concrete"
+    }, {
+      "block": "minecraft:white_concrete_powder"
+    }, {
+      "block": "minecraft:white_glazed_terracotta"
+    }, {
+      "block": "minecraft:snow_block"
+    }, {
+      "block": "minecraft:snow"
+    }]
+  },
+  "hyacinth:default_light_blue_gray": {
+    "color": 10791096,
+    "name": "Light Blue Gray",
+    "blockstates": [{
+      "block": "minecraft:clay"
+    }]
+  },
+  "hyacinth:default_dirt_brown": {
+    "color": 9923917,
+    "name": "Dirt Brown",
+    "blockstates": [{
+      "block": "minecraft:jungle_log",
+      "axis": "y"
+    }, {
+      "block": "minecraft:jungle_planks"
+    }, {
+      "block": "minecraft:jungle_slab"
+    }, {
+      "block": "minecraft:dirt"
+    }, {
+      "block": "minecraft:coarse_dirt"
+    }, {
+      "block": "minecraft:rooted_dirt"
+    }, {
+      "block": "minecraft:jukebox"
+    }, {
+      "block": "minecraft:granite"
+    }, {
+      "block": "minecraft:granite_slab"
+    }, {
+      "block": "minecraft:jungle_pressure_plate"
+    }, {
+      "block": "minecraft:packed_mud"
+    }]
+  },
+  "hyacinth:default_stone_gray": {
+    "color": 7368816,
+    "name": "Stone Gray",
+    "blockstates": [{
+      "block": "minecraft:cobblestone"
+    }, {
+      "block": "minecraft:cobblestone_slab"
+    }, {
+      "block": "minecraft:mossy_cobblestone"
+    }, {
+      "block": "minecraft:mossy_cobblestone_slab"
+    }, {
+      "block": "minecraft:stone"
+    }, {
+      "block": "minecraft:stone_slab"
+    }, {
+      "block": "minecraft:smooth_stone_slab"
+    }, {
+      "block": "minecraft:stone_bricks"
+    }, {
+      "block": "minecraft:stone_brick_slab"
+    }, {
+      "block": "minecraft:andesite"
+    }, {
+      "block": "minecraft:andesite_slab"
+    }, {
+      "block": "minecraft:acacia_log",
+      "axis": "x"
+    }, {
+      "block": "minecraft:gravel"
+    }, {
+      "block": "minecraft:stone_pressure_plate"
+    }]
+  },
+  "hyacinth:default_water_blue": {
+    "color": 4210943,
+    "name": "Water Blue",
+    "blockstates": [{
+      "block": "minecraft:water"
+    }]
+  },
+  "hyacinth:default_oak_tan": {
+    "color": 9402184,
+    "name": "Oak Tan",
+    "blockstates": [{
+      "block": "minecraft:oak_log",
+      "axis": "y"
+    }, {
+      "block": "minecraft:oak_planks"
+    }, {
+      "block": "minecraft:oak_slab"
+    }, {
+      "block": "minecraft:crafting_table"
+    }, {
+      "block": "minecraft:oak_pressure_plate"
+    }]
+  },
+  "hyacinth:default_off_white": {
+    "color": 16776437,
+    "name": "Off White",
+    "blockstates": [{
+      "block": "minecraft:birch_log",
+      "axis": "x"
+    }, {
+      "block": "minecraft:diorite"
+    }, {
+      "block": "minecraft:diorite_slab"
+    }, {
+      "block": "minecraft:quartz_block"
+    }, {
+      "block": "minecraft:quartz_slab"
+    }, {
+      "block": "minecraft:sea_lantern"
+    }]
+  }
+}

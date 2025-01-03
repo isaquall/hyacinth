@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "hyacinth",
+  "version": "${version}",
+  "name": "hyacinth",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/isaquall/hyacinth"
+  },
+  "license": "MIT",
+  "icon": "assets/hyacinth/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.isaquall.hyacinth.client.HyacinthClient"
+    ],
+    "main": [
+      "me.isaquall.hyacinth.Hyacinth"
+    ]
+  },
+  "mixins": [
+    "hyacinth.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "owo-lib": "${owo_version}"
+  }
+}

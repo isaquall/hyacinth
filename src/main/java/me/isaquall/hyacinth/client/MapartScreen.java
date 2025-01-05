@@ -5,38 +5,40 @@ import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.LabelComponent;
 import io.wispforest.owo.ui.component.TextureComponent;
-import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.container.*;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
-//     TODO the selection stuff is a little jank rn
-    private static final Map<Identifier, Pair<BlockState, RenderEffectWrapper<Component>>> SELECTED_BLOCK = new HashMap<>();
+    private static final Map<BlockPalette, BlockState> SELECTED_BLOCK = new HashMap<>();
 
     public MapartScreen() {
         super(GridLayout.class, DataSource.asset(Identifier.of("hyacinth", "mapart_ui_model")));
@@ -52,10 +54,12 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         try {
             BufferedImage image = ImageIO.read(file);
             image.getScaledInstance(128, 128, Image.SCALE_DEFAULT);
-            try (ByteArrayOutputStream output = new ByteArrayOutputStream();
-                 ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray())) {
+            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                image.getScaledInstance(128, 128, Image.SCALE_DEFAULT);
                 ImageIO.write(image, "png", output);
+                ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
                 MinecraftClient.getInstance().getTextureManager().registerTexture(Identifier.of("hyacinth", file.getName() + "_resized"), new NativeImageBackedTexture(NativeImage.read(input)));
+                input.close();
             }
 
             TextureComponent mapPreview = Components.texture(Identifier.of("hyacinth", file.getName() + "_resized"), 128, 128, 128, 128, 128, 128);
@@ -114,44 +118,51 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
     private void buildBlockPalette(FlowLayout blockPalette) {
         for (BlockPalette palette : BlockPalette.BLOCK_PALETTES.values()) {
-            Identifier id = palette.id();
 
             FlowLayout color = Containers.horizontalFlow(Sizing.fill(95), Sizing.content(3));
             blockPalette.child(color);
 
             color.child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(Color.ofRgb((palette.color()))).fill(true).tooltip(Text.of(palette.name())).margins(Insets.right(7)));
-            RenderEffectWrapper<Component> barrier = Containers.renderEffect(Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(16)).tooltip(Text.of("Disable")));
-            color.child(barrier);
 
-            barrier.mouseDown().subscribe((x, y, button) -> {
-                if (SELECTED_BLOCK.get(id).getLeft() != null) {
-                    SELECTED_BLOCK.get(palette.id()).getRight().clearEffects();
-                    SELECTED_BLOCK.put(palette.id(), Pair.of(null, barrier));
-                    barrier.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
-                    System.out.println(SELECTED_BLOCK);
-                    UISounds.playButtonSound();
-                }
-                return true;
-            });
+            SELECTED_BLOCK.computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
+            palette.states().addFirst(Blocks.BARRIER.getDefaultState());
 
-            SELECTED_BLOCK.put(id, Pair.of(null, barrier)); // by default, barrier/null is selected
-            barrier.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
+            System.out.println(SELECTED_BLOCK);
 
             for (BlockState blockState : palette.states()) {
-                RenderEffectWrapper<Component> block = Containers.renderEffect(Components.block(blockState).sizing(Sizing.fixed(16)));
-                block.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
+                RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
+                blockStateRenderWrapper.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
 
-                color.child(block);
-                block.mouseDown().subscribe((x, y, button) -> {
-                    if (SELECTED_BLOCK.get(id).getLeft() != blockState) {
-                        SELECTED_BLOCK.get(palette.id()).getRight().clearEffects();
-                        SELECTED_BLOCK.put(palette.id(), Pair.of(blockState, block));
-                        block.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
-                        UISounds.playButtonSound();
+                if (SELECTED_BLOCK.get(palette) == blockState) {
+                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
+                }
+
+                color.child(blockStateRenderWrapper);
+                blockStateRenderWrapper.mouseDown().subscribe((x, y, button) -> {
+                    for (Component child : color.children()) {
+                        if (child instanceof RenderEffectWrapper<?> renderEffectWrapper) {
+                            renderEffectWrapper.clearEffects();
+                        }
                     }
+
+                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
+                    SELECTED_BLOCK.put(palette, blockState);
+                    UISounds.playButtonSound();
+
+                    System.out.println(SELECTED_BLOCK);
                     return true;
                 });
             }
+        }
+    }
+
+    private Component createBlockStateComponent(BlockState blockState) {
+        if (blockState == Blocks.BARRIER.getDefaultState()) {
+            return Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(16));
+        } else if (blockState == Blocks.WATER.getDefaultState()) {
+            return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(16));
+        } else {
+            return Components.block(blockState).sizing(Sizing.fixed(16));
         }
     }
 }

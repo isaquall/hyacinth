@@ -13,8 +13,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 public class BlockPaletteReloadListener implements SimpleSynchronousResourceReloadListener {
 
@@ -35,7 +34,7 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
             JsonObject file = JANKSON.load(resource.getInputStream());
             for (String key : file.keySet()) {
                 JsonObject entry = JANKSON.load(file.get(key).toJson());
-                List<BlockState> states = new ArrayList<>();
+                LinkedHashSet<BlockState> states = new LinkedHashSet<>();
                 OPS.getList(entry.get("blockstates")).getOrThrow(false, (message) -> {
                     throw new RuntimeException("Hyacinth failed to load blockstates. " + message);
                 }).accept((element) -> {

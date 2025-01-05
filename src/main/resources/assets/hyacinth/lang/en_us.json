@@ -1,0 +1,14 @@
+{
+  "hyacinth.button_select_image_file":{
+    "text": "Select Image File",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.select_file": {
+    "text": "Please select a file to import.",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.map_size": {
+    "text": "Map Size:",
+    "color": "#FFFFFF"
+  }
+}

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /*
-    A block palette represents a group of blocks that produce the same color.
+    A block palette represents a grouping of block states that produce the same color.
  */
 public record BlockPalette(Identifier id, String name, int color, List<BlockState> states) {
 

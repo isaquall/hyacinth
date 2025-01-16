@@ -15,6 +15,8 @@ import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
+import me.isaquall.hyacinth.resizing_strategy.HyacinthResizingStrategies;
+import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -28,19 +30,15 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 @Environment(EnvType.CLIENT)
 public class MapartScreen extends BaseUIModelScreen<GridLayout> {
-
-    private static final Map<BlockPalette, BlockState> SELECTED_BLOCK = new HashMap<>();
 
     public MapartScreen() {
         super(GridLayout.class, DataSource.asset(Identifier.of("hyacinth", "mapart_ui_model")));
@@ -50,40 +48,47 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     protected void build(GridLayout rootComponent) {
         buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"));
         rootComponent.childById(ButtonComponent.class, "select_image_file").onPress(button -> openImageFileSelectionWindow(button, rootComponent));
-        rootComponent.childById(ButtonComponent.class, "resizing_strategy").mouseDown().subscribe((x, y, button) -> {
-            openResizingStrategiesDropdown(x, y, rootComponent.childById(FlowLayout.class, "resizing_strategy_container"));
+
+        ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
+        resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
+            openResizingStrategiesDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent);
             return true;
         });
+        resizingStrategyButton.setMessage(Text.translatable("hyacinth.scale_smooth"));
     }
 
-    private void openResizingStrategiesDropdown(double x, double y, FlowLayout container) {
+    private void openResizingStrategiesDropdown(FlowLayout container, ButtonComponent resizingStrategyButton, GridLayout rootComponent) {
+        if (!resizingStrategyButton.active()) return;
+
+        resizingStrategyButton.active(false);
         DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
-        dropdown.button(Text.of("Hi"), (component) -> {
-            dropdown.remove();
-        });
-        dropdown.button(Text.of("Wawawajkajkfjkdsafkj"), (component) -> {
-            dropdown.remove();
-        });
+        for (ResizingStrategy strategy : HyacinthResizingStrategies.RESIZING_STRATEGIES.values()) {
+            dropdown.button(Text.translatable(strategy.name()), component -> {
+                    component.remove();
+                    HyacinthClient.getRenderPipeline().resizingStrategy(strategy);
+                    resizingStrategyButton.setMessage(Text.translatable(strategy.name()));
+                    redrawImage(rootComponent);
+                    resizingStrategyButton.active(true);
+            });
+        }
         container.child(dropdown);
     }
 
-    private void updateImage(File file, GridLayout rootComponent) {
-        try {
-            BufferedImage image = ImageIO.read(file);
-            image.getScaledInstance(128, 128, Image.SCALE_DEFAULT);
-            try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                image.getScaledInstance(128, 128, Image.SCALE_DEFAULT);
-                ImageIO.write(image, "png", output);
-                ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-                MinecraftClient.getInstance().getTextureManager().registerTexture(Identifier.of("hyacinth", file.getName() + "_resized"), new NativeImageBackedTexture(NativeImage.read(input)));
-                input.close();
-            }
+    private void redrawImage(GridLayout rootComponent) {
+        Identifier id = Identifier.of("hyacinth", UUID.randomUUID() + "_resized");
 
-            TextureComponent mapPreview = Components.texture(Identifier.of("hyacinth", file.getName() + "_resized"), 128, 128, 128, 128, 128, 128);
-            rootComponent.child(mapPreview, 1, 0);
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            BufferedImage image = HyacinthClient.getRenderPipeline().process();
+            ImageIO.write(image, "png", output);
+            ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+            MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(NativeImage.read(input)));
+            input.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
+        TextureComponent mapPreview = Components.texture(id, 128, 128, 128, 128, 128, 128);
+        rootComponent.child(mapPreview, 1, 0);
     }
 
     private void openImageFileSelectionWindow(ButtonComponent button, GridLayout rootComponent) {
@@ -93,7 +98,8 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
         if (file != null) {
-            updateImage(new File(file), rootComponent);
+            HyacinthClient.getRenderPipeline().openFile(new File(file));
+            redrawImage(rootComponent);
             UISounds.playButtonSound();
         }
         button.active(true);
@@ -107,14 +113,14 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
             color.child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(Color.ofRgb((palette.color()))).fill(true).tooltip(Text.of(palette.name())).margins(Insets.right(7)));
 
-            SELECTED_BLOCK.computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
+            HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
             palette.states().addFirst(Blocks.BARRIER.getDefaultState());
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
                 blockStateRenderWrapper.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
 
-                if (SELECTED_BLOCK.get(palette) == blockState) {
+                if (HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.get(palette) == blockState) {
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
                 }
 
@@ -127,7 +133,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                     }
 
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
-                    SELECTED_BLOCK.put(palette, blockState);
+                    HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.put(palette, blockState);
                     UISounds.playButtonSound();
                     return true;
                 });

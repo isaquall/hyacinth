@@ -13,6 +13,8 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class HyacinthClient implements ClientModInitializer {
 
     private final KeyBinding mapartScreenBinding = new KeyBinding("hyacinth.mapart_screen_keybind", GLFW.GLFW_KEY_Z, "Hyacinth");
+    private static final RenderPipeline renderPipeline = new RenderPipeline();
+
     @Override
     public void onInitializeClient() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("mapart")
@@ -28,5 +30,9 @@ public class HyacinthClient implements ClientModInitializer {
                 MinecraftClient.getInstance().send(() -> MinecraftClient.getInstance().setScreen(new MapartScreen()));
             }
         });
+    }
+
+    public static RenderPipeline getRenderPipeline() {
+        return renderPipeline;
     }
 }

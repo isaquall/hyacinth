@@ -10,5 +10,13 @@
   "hyacinth.map_size": {
     "text": "Map Size:",
     "color": "#FFFFFF"
+  },
+  "hyacinth.resizing_strategy": {
+    "text": "Resizing Strategy:",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.mapart_screen_keybind": {
+    "text": "Open Mapart Screen",
+    "color": "#FFFFFF"
   }
 }

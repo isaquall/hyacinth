@@ -3,11 +3,6 @@
     <components>
         <grid-layout columns="2" rows="2">
             <children>
-<!--                <texture id="map" texture="hyacinth:textures/pearl_no_dither.png"-->
-<!--                         texture-width="128" texture-height="128"-->
-<!--                         region-width="128" region-height="128">-->
-<!--                    <cursor-style>move</cursor-style>-->
-<!--                </texture>-->
                 <flow-layout direction="vertical" row="0" column="0">
                     <children>
                         <flow-layout direction="horizontal">
@@ -43,31 +38,59 @@
                         </scroll>
                     </children>
                 </flow-layout>
-<!--                <flow-layout direction="vertical" row="1" column="1">-->
-<!--                    <children>-->
-<!--                        <flow-layout direction="horizontal">-->
-<!--                            <children>-->
-<!--                                <label>-->
-<!--                                    <text translate="true">hyacinth.map_size</text>-->
-<!--                                </label>-->
-<!--                                <text-box id="map_length">-->
-<!--                                    <text>1</text>-->
-<!--                                </text-box>-->
-<!--                                <label>-->
-<!--                                    <text>x</text>-->
-<!--                                </label>-->
-<!--                                <text-box id="map_height">-->
-<!--                                    <text>1</text>-->
-<!--                                </text-box>-->
-<!--                            </children>-->
-<!--                        </flow-layout>-->
-<!--                    </children>-->
-<!--                    <surface>-->
-<!--                        <panel-with-inset>2</panel-with-inset>-->
-<!--                    </surface>-->
-<!--                </flow-layout>-->
+                <flow-layout direction="vertical" row="1" column="1">
+                    <children>
+                        <flow-layout direction="horizontal">
+                            <children>
+                                <label>
+                                    <text translate="true">hyacinth.map_size</text>
+                                </label>
+                                <text-box id="map_length">
+                                    <text>1</text>
+                                    <sizing>
+                                        <horizontal method="fixed">10</horizontal>
+                                        <vertical method="fixed">10</vertical>
+                                    </sizing>
+                                </text-box>
+                                <label>
+                                    <text>x</text>
+                                </label>
+                                <text-box id="map_height">
+                                    <text>1</text>
+                                    <sizing>
+                                        <horizontal method="fixed">10</horizontal>
+                                        <vertical method="fixed">10</vertical>
+                                    </sizing>
+                                </text-box>
+                            </children>
+                        </flow-layout>
+                        <flow-layout direction="horizontal">
+                            <children>
+                                <label>
+                                    <text translate="true">hyacinth.resizing_strategy</text>
+                                </label>
+                                <flow-layout direction="vertical" id="resizing_strategy_container">
+                                    <children>
+                                        <button id="resizing_strategy">
+                                            <text>Pick</text>
+                                        </button>
+                                    </children>
+                                    <sizing>
+                                        <vertical method="content"/>
+                                        <horizontal method="content"/>
+                                    </sizing>
+                                </flow-layout>
+                            </children>
+                        </flow-layout>
+                    </children>
+                    <padding>
+                        <all>10</all>
+                    </padding>
+                    <surface>
+                        <panel-with-inset>2</panel-with-inset>
+                    </surface>
+                </flow-layout>
             </children>
-
             <surface>
                 <vanilla-translucent/>
             </surface>

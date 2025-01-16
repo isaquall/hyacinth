@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.6-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -28,8 +28,8 @@ dependencies {
     modImplementation "io.wispforest:owo-lib:${project.owo_version}"
     include "io.wispforest:owo-sentinel:${project.owo_version}"
 
-    modImplementation "io.github.cottonmc:Jankson-Fabric:6.0.0+j1.2.3"
-    include "io.github.cottonmc:Jankson-Fabric:6.0.0+j1.2.3"
+    modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+    include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 }
 
 processResources {
@@ -42,7 +42,8 @@ processResources {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
-                "owo_version": project.owo_version
+                "owo_version": project.owo_version,
+                "jankson_version": project.jankson_version
     }
 }
 

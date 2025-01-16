@@ -3,15 +3,16 @@ package me.isaquall.hyacinth.client;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.component.LabelComponent;
+import io.wispforest.owo.ui.component.DropdownComponent;
 import io.wispforest.owo.ui.component.TextureComponent;
+import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.container.*;
+import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Insets;
-import io.wispforest.owo.ui.core.*;
+import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import net.fabricmc.api.EnvType;
@@ -24,6 +25,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -48,6 +50,21 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     protected void build(GridLayout rootComponent) {
         buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"));
         rootComponent.childById(ButtonComponent.class, "select_image_file").onPress(button -> openImageFileSelectionWindow(button, rootComponent));
+        rootComponent.childById(ButtonComponent.class, "resizing_strategy").mouseDown().subscribe((x, y, button) -> {
+            openResizingStrategiesDropdown(x, y, rootComponent.childById(FlowLayout.class, "resizing_strategy_container"));
+            return true;
+        });
+    }
+
+    private void openResizingStrategiesDropdown(double x, double y, FlowLayout container) {
+        DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
+        dropdown.button(Text.of("Hi"), (component) -> {
+            dropdown.remove();
+        });
+        dropdown.button(Text.of("Wawawajkajkfjkdsafkj"), (component) -> {
+            dropdown.remove();
+        });
+        container.child(dropdown);
     }
 
     private void updateImage(File file, GridLayout rootComponent) {
@@ -73,47 +90,13 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         UISounds.playButtonSound();
         button.active(false);
 
-        FlowLayout selectionFlow = Containers.verticalFlow(Sizing.fill(), Sizing.fill());
+        String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
-        DraggableContainer<Component> selectionWindow = Containers.draggable(Sizing.fill(50), Sizing.fill(20), selectionFlow);
-        selectionWindow.zIndex(2);
-        selectionWindow.foreheadSize(10);
-        selectionWindow.surface(Surface.PANEL);
-        selectionWindow.verticalAlignment(VerticalAlignment.CENTER);
-        selectionWindow.horizontalAlignment(HorizontalAlignment.CENTER);
-        rootComponent.child(selectionWindow, 1, 0);
-
-        LabelComponent header = Components.label(Text.translatable("hyacinth.select_file"));
-        header.margins(Insets.left(5));
-
-        FlowLayout entries = Containers.verticalFlow(Sizing.fill(), Sizing.fill());
-
-        ScrollContainer<Component> verticalScroll = Containers.verticalScroll(Sizing.fill(), Sizing.fill(), entries);
-        verticalScroll.scrollbar(ScrollContainer.Scrollbar.vanilla());
-        verticalScroll.scrollbarThiccness(3);
-        verticalScroll.margins(Insets.left(5).withRight(5).withBottom(15).withTop(10));
-
-        selectionFlow.child(header);
-        selectionFlow.child(verticalScroll);
-
-        File inputDir = new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input");
-        inputDir.mkdirs();
-
-        for (File file : inputDir.listFiles()) {
-            if (file.isDirectory()) continue;
-            if (!file.getPath().endsWith(".png")) continue;
-
-            LabelComponent text = Components.label(Text.of(file.getName()));
-            entries.child(text);
-            text.mouseDown().subscribe((x, y, b) -> {
-                button.active(true);
-                updateImage(file, rootComponent);
-                return true;
-            });
-            text.color().animate(500, Easing.QUADRATIC, Color.GREEN);
-            text.mouseEnter().subscribe(() -> text.color().animation().forwards());
-            text.mouseLeave().subscribe(() -> text.color().animation().backwards());
+        if (file != null) {
+            updateImage(new File(file), rootComponent);
+            UISounds.playButtonSound();
         }
+        button.active(true);
     }
 
     private void buildBlockPalette(FlowLayout blockPalette) {
@@ -126,8 +109,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
             SELECTED_BLOCK.computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
             palette.states().addFirst(Blocks.BARRIER.getDefaultState());
-
-            System.out.println(SELECTED_BLOCK);
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
@@ -148,8 +129,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
                     SELECTED_BLOCK.put(palette, blockState);
                     UISounds.playButtonSound();
-
-                    System.out.println(SELECTED_BLOCK);
                     return true;
                 });
             }

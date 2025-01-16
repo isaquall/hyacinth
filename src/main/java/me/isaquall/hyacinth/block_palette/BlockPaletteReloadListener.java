@@ -35,7 +35,7 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
             for (String key : file.keySet()) {
                 JsonObject entry = JANKSON.load(file.get(key).toJson());
                 LinkedHashSet<BlockState> states = new LinkedHashSet<>();
-                OPS.getList(entry.get("blockstates")).getOrThrow(false, (message) -> {
+                OPS.getList(entry.get("blockstates")).getOrThrow(message -> {
                     throw new RuntimeException("Hyacinth failed to load blockstates. " + message);
                 }).accept((element) -> {
                     try {
@@ -45,7 +45,7 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
                     }
                 });
 
-                Identifier id = new Identifier(key);
+                Identifier id = Identifier.of(key);
                 if (!BlockPalette.BLOCK_PALETTES.containsKey(id)) {
                     BlockPalette.BLOCK_PALETTES.put(id, new BlockPalette(id, entry.get(String.class, "name"), entry.getInt("color", 0xFFFFFFFF), states));
                 } else {

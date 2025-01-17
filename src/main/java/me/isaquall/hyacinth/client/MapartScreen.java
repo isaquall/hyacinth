@@ -113,14 +113,14 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
             color.child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(Color.ofRgb((palette.color()))).fill(true).tooltip(Text.of(palette.name())).margins(Insets.right(7)));
 
-            HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
+            HyacinthClient.getRenderPipeline().selectedBlocks().computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
             palette.states().addFirst(Blocks.BARRIER.getDefaultState());
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
                 blockStateRenderWrapper.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
 
-                if (HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.get(palette) == blockState) {
+                if (HyacinthClient.getRenderPipeline().selectedBlocks().get(palette) == blockState) {
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
                 }
 
@@ -133,7 +133,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                     }
 
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
-                    HyacinthClient.getRenderPipeline().SELECTED_BLOCKS.put(palette, blockState);
+                    HyacinthClient.getRenderPipeline().selectedBlocks().put(palette, blockState);
                     UISounds.playButtonSound();
                     return true;
                 });

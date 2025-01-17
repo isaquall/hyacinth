@@ -15,12 +15,10 @@ public class HyacinthResizingStrategies {
         RESIZING_STRATEGIES.put(Identifier.of("hyacinth", "resizing_strategy/scale_default"), new ResizingStrategy() {
             @Override
             public BufferedImage resize(BufferedImage in, int x, int y) {
-//                long start = System.currentTimeMillis();
                 BufferedImage out = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D graphics = out.createGraphics();
                 graphics.drawImage(in.getScaledInstance(x, y, Image.SCALE_DEFAULT), 0, 0, null);
                 graphics.dispose();
-//                System.out.println("Resized image in " + (System.currentTimeMillis() - start) + "ms");
                 return out;
             }
 
@@ -33,12 +31,10 @@ public class HyacinthResizingStrategies {
         RESIZING_STRATEGIES.put(Identifier.of("hyacinth", "resizing_strategy/scale_smooth"), new ResizingStrategy() {
             @Override
             public BufferedImage resize(BufferedImage in, int x, int y) {
-//                long start = System.currentTimeMillis();
                 BufferedImage out = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D graphics = out.createGraphics();
                 graphics.drawImage(in.getScaledInstance(x, y, Image.SCALE_SMOOTH), 0, 0, null);
                 graphics.dispose();
-//                System.out.println("Resized image in " + (System.currentTimeMillis() - start) + "ms");
                 return out;
             }
 

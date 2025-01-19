@@ -55,7 +55,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
     @Override
     protected void build(GridLayout rootComponent) {
-        buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"));
+        buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"), rootComponent);
         rootComponent.childById(ButtonComponent.class, "select_image_file").onPress(button -> openImageFileSelectionWindow(button, rootComponent));
 
         ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
@@ -128,7 +128,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         button.active(true);
     }
 
-    private void buildBlockPalette(FlowLayout blockPalette) {
+    private void buildBlockPalette(FlowLayout blockPalette, GridLayout rootComponent) {
         for (BlockPalette palette : BlockPalette.BLOCK_PALETTES.values()) {
 
             FlowLayout color = Containers.horizontalFlow(Sizing.fill(95), Sizing.content(3));
@@ -147,7 +147,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
-                blockStateRenderWrapper.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
+                blockStateRenderWrapper.tooltip(Text.translatable(getTranslationKey(blockState)));
 
                 if (RENDER_PIPELINE.selectedBlocks().get(palette) == blockState) {
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(highlight));
@@ -164,6 +164,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                     blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(highlight));
                     RENDER_PIPELINE.selectedBlocks().put(palette, blockState);
                     UISounds.playButtonSound();
+                    redrawImage(rootComponent);
                     return true;
                 });
             }
@@ -177,6 +178,14 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(24));
         } else {
             return Components.block(blockState).sizing(Sizing.fixed(24));
+        }
+    }
+
+    private String getTranslationKey(BlockState blockState) {
+        if (blockState == Blocks.BARRIER.getDefaultState()) {
+            return "hyacinth.disabled";
+        } else {
+            return blockState.getBlock().getTranslationKey();
         }
     }
 

@@ -90,5 +90,13 @@
   "hyacinth.floyd_steinberg": {
     "text": "Floyd-Steinberg",
     "color": "#FFFFFF"
+  },
+  "hyacinth.atkinson": {
+    "text": "Atkinson",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.disabled": {
+    "text": "Disabled",
+    "color": "#FFFFFF"
   }
 }

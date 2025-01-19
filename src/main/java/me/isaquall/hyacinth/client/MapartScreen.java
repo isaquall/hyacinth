@@ -14,7 +14,9 @@ import io.wispforest.owo.ui.core.Component;
 import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.util.UISounds;
+import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
+import me.isaquall.hyacinth.dithering.DitheringMatrix;
 import me.isaquall.hyacinth.resizing_strategy.HyacinthResizingStrategies;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import net.fabricmc.api.EnvType;
@@ -35,10 +37,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+@SuppressWarnings("UnstableApiUsage")
 @Environment(EnvType.CLIENT)
 public class MapartScreen extends BaseUIModelScreen<GridLayout> {
+
+    private final Color highlight = new Color(0, 10, 0, 1f);
+    private static final RenderPipeline RENDER_PIPELINE = new RenderPipeline();
 
     public MapartScreen() {
         super(GridLayout.class, DataSource.asset(Identifier.of("hyacinth", "mapart_ui_model")));
@@ -51,24 +60,37 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
         ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
         resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
-            openResizingStrategiesDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent);
+            UISounds.playButtonSound();
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, HyacinthResizingStrategies.RESIZING_STRATEGIES.values(), ResizingStrategy::name, RENDER_PIPELINE::resizingStrategy);
             return true;
         });
-        resizingStrategyButton.setMessage(Text.translatable("hyacinth.scale_smooth"));
+        resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().name()));
+
+        ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_matrix");
+        ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
+            UISounds.playButtonSound();
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_matrix_container"), ditheringMatrixButton, rootComponent, DitheringMatrix.DITHERING_MATRICES.values(), DitheringMatrix::translatableName, RENDER_PIPELINE::ditheringMatrix);
+            return true;
+        });
+        ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringMatrix().translatableName()));
+
+        redrawImage(rootComponent);
     }
 
-    private void openResizingStrategiesDropdown(FlowLayout container, ButtonComponent resizingStrategyButton, GridLayout rootComponent) {
-        if (!resizingStrategyButton.active()) return;
+    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, Consumer<T> update) {
+        if (!button.active()) return;
 
-        resizingStrategyButton.active(false);
+        button.active(false);
         DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
-        for (ResizingStrategy strategy : HyacinthResizingStrategies.RESIZING_STRATEGIES.values()) {
-            dropdown.button(Text.translatable(strategy.name()), component -> {
-                    component.remove();
-                    HyacinthClient.getRenderPipeline().resizingStrategy(strategy);
-                    resizingStrategyButton.setMessage(Text.translatable(strategy.name()));
-                    redrawImage(rootComponent);
-                    resizingStrategyButton.active(true);
+        for (T option : options) {
+            String nameTranslationKey = nameFunction.apply(option);
+            dropdown.button(Text.translatable(nameTranslationKey), component -> {
+                component.remove();
+                UISounds.playButtonSound();
+                update.accept(option);
+                button.setMessage(Text.translatable(nameTranslationKey));
+                redrawImage(rootComponent);
+                button.active(true);
             });
         }
         container.child(dropdown);
@@ -78,7 +100,8 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         Identifier id = Identifier.of("hyacinth", UUID.randomUUID() + "_resized");
 
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            BufferedImage image = HyacinthClient.getRenderPipeline().process();
+            BufferedImage image = RENDER_PIPELINE.process();
+            if (image == null) return;
             ImageIO.write(image, "png", output);
             ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
             MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(NativeImage.read(input)));
@@ -98,7 +121,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
         if (file != null) {
-            HyacinthClient.getRenderPipeline().openFile(new File(file));
+            RENDER_PIPELINE.openFile(new File(file));
             redrawImage(rootComponent);
             UISounds.playButtonSound();
         }
@@ -111,17 +134,23 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             FlowLayout color = Containers.horizontalFlow(Sizing.fill(95), Sizing.content(3));
             blockPalette.child(color);
 
-            color.child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(Color.ofRgb((palette.color()))).fill(true).tooltip(Text.of(palette.name())).margins(Insets.right(7)));
+            FlowLayout swatch = Containers.verticalFlow(Sizing.fixed(24), Sizing.fixed(24));
+            swatch.tooltip(Text.translatable(palette.translatableName())).margins(Insets.right(7));
+            int[] swatchColors = ColorUtils.getVariations(palette.color());
+            for (int i = 0; i < 3; i++) {
+                swatch.child(Components.box(Sizing.fixed(24), Sizing.fixed(8)).color(Color.ofRgb(swatchColors[i])).fill(true));
+            }
+            color.child(swatch);
 
-            HyacinthClient.getRenderPipeline().selectedBlocks().computeIfAbsent(palette, k -> Blocks.BARRIER.getDefaultState());
+            RENDER_PIPELINE.selectedBlocks().computeIfAbsent(palette, p -> p.states().getFirst());
             palette.states().addFirst(Blocks.BARRIER.getDefaultState());
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
                 blockStateRenderWrapper.tooltip(Text.translatable(blockState.getBlock().getTranslationKey()));
 
-                if (HyacinthClient.getRenderPipeline().selectedBlocks().get(palette) == blockState) {
-                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
+                if (RENDER_PIPELINE.selectedBlocks().get(palette) == blockState) {
+                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(highlight));
                 }
 
                 color.child(blockStateRenderWrapper);
@@ -132,8 +161,8 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                         }
                     }
 
-                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(Color.GREEN));
-                    HyacinthClient.getRenderPipeline().selectedBlocks().put(palette, blockState);
+                    blockStateRenderWrapper.effect(RenderEffectWrapper.RenderEffect.color(highlight));
+                    RENDER_PIPELINE.selectedBlocks().put(palette, blockState);
                     UISounds.playButtonSound();
                     return true;
                 });
@@ -143,11 +172,15 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
     private Component createBlockStateComponent(BlockState blockState) {
         if (blockState == Blocks.BARRIER.getDefaultState()) {
-            return Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(16));
+            return Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(24));
         } else if (blockState == Blocks.WATER.getDefaultState()) {
-            return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(16));
+            return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(24));
         } else {
-            return Components.block(blockState).sizing(Sizing.fixed(16));
+            return Components.block(blockState).sizing(Sizing.fixed(24));
         }
+    }
+
+    public static RenderPipeline getRenderPipeline() {
+        return RENDER_PIPELINE;
     }
 }

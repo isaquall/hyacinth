@@ -82,6 +82,24 @@
                                 </flow-layout>
                             </children>
                         </flow-layout>
+                        <flow-layout direction="horizontal">
+                            <children>
+                                <label>
+                                    <text translate="true">hyacinth.dithering_matrix</text>
+                                </label>
+                                <flow-layout direction="vertical" id="dithering_matrix_container">
+                                    <children>
+                                        <button id="dithering_matrix">
+                                            <text>Pick</text>
+                                        </button>
+                                    </children>
+                                    <sizing>
+                                        <vertical method="content"/>
+                                        <horizontal method="content"/>
+                                    </sizing>
+                                </flow-layout>
+                            </children>
+                        </flow-layout>
                     </children>
                     <padding>
                         <all>10</all>

@@ -15,7 +15,7 @@ public interface ResizingStrategy {
     BufferedImage resize(BufferedImage in, int x, int y);
 
     /**
-     *  Returns the translation key for name of this resizing strategy.
+     *  Returns the translation key for translatableName of this resizing strategy.
      *
      * @return the {@link Identifier} of the translation key
      */

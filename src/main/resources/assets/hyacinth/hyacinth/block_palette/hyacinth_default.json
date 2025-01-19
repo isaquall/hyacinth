@@ -1,7 +1,7 @@
 {
   "hyacinth:default_pale_green": {
     "color": 8368696,
-    "name": "Pale Green",
+    "translatableName": "hyacinth.pale_green",
     "blockstates": [{
       "block": "minecraft:grass_block"
     }, {
@@ -10,7 +10,7 @@
   },
   "hyacinth:default_pale_yellow": {
     "color": 16247203,
-    "name": "Pale Yellow",
+    "translatableName": "hyacinth.pale_yellow",
     "blockstates": [{
       "block": "minecraft:sand"
     }, {
@@ -42,7 +42,7 @@
   },
   "hyacinth:default_white_gray": {
     "color": 13092807,
-    "name": "White Gray",
+    "translatableName": "hyacinth.white_gray",
     "blockstates": [{
       "block": "minecraft:cobweb"
     }, {
@@ -53,7 +53,7 @@
   },
   "hyacinth:default_bright_red": {
     "color": 16711680,
-    "name": "Bright Red",
+    "translatableName": "hyacinth.bright_red",
     "blockstates": [{
       "block": "minecraft:tnt"
     }, {
@@ -62,7 +62,7 @@
   },
   "hyacinth:default_pale_purple": {
     "color": 10526975,
-    "name": "Pale Purple",
+    "translatableName": "hyacinth.pale_purple",
     "blockstates": [{
       "block": "ice"
     }, {
@@ -73,7 +73,7 @@
   },
   "hyacinth:default_iron_gray": {
     "color": 10987431,
-    "name": "Iron Gray",
+    "translatableName": "hyacinth.iron_gray",
     "blockstates": [{
       "block": "minecraft:iron_block"
     }, {
@@ -86,7 +86,7 @@
   },
   "hyacinth:default_dark_green": {
     "color": 31744,
-    "name": "Dark Green",
+    "translatableName": "hyacinth.dark_green",
     "blockstates": [{
       "block": "minecraft:oak_leaves"
     }, {
@@ -108,7 +108,7 @@
   },
   "hyacinth:default_white": {
     "color": 16777215,
-    "name": "White",
+    "translatableName": "hyacinth.white",
     "blockstates": [{
       "block": "minecraft:white_wool"
     }, {
@@ -129,14 +129,14 @@
   },
   "hyacinth:default_light_blue_gray": {
     "color": 10791096,
-    "name": "Light Blue Gray",
+    "translatableName": "hyacinth.light_blue_gray",
     "blockstates": [{
       "block": "minecraft:clay"
     }]
   },
   "hyacinth:default_dirt_brown": {
     "color": 9923917,
-    "name": "Dirt Brown",
+    "translatableName": "hyacinth.dirt_brown",
     "blockstates": [{
       "block": "minecraft:jungle_log",
       "axis": "y"
@@ -164,7 +164,7 @@
   },
   "hyacinth:default_stone_gray": {
     "color": 7368816,
-    "name": "Stone Gray",
+    "translatableName": "hyacinth.stone_gray",
     "blockstates": [{
       "block": "minecraft:cobblestone"
     }, {
@@ -198,14 +198,14 @@
   },
   "hyacinth:default_water_blue": {
     "color": 4210943,
-    "name": "Water Blue",
+    "translatableName": "hyacinth.water_blue",
     "blockstates": [{
       "block": "minecraft:water"
     }]
   },
   "hyacinth:default_oak_tan": {
     "color": 9402184,
-    "name": "Oak Tan",
+    "translatableName": "hyacinth.oak_tan",
     "blockstates": [{
       "block": "minecraft:oak_log",
       "axis": "y"
@@ -221,7 +221,7 @@
   },
   "hyacinth:default_off_white": {
     "color": 16776437,
-    "name": "Off White",
+    "translatableName": "hyacinth.off_white",
     "blockstates": [{
       "block": "minecraft:birch_log",
       "axis": "x"

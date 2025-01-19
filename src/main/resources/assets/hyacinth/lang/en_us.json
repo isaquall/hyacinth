@@ -26,5 +26,69 @@
   "hyacinth.scale_smooth": {
     "text": "Smooth",
     "color": "#FFFFFF"
+  },
+  "hyacinth.dithering_matrix": {
+    "text": "Dithering Matrix:",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.pale_green": {
+    "text": "Pale Green",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.pale_yellow": {
+    "text": "Pale Yellow",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.white_gray": {
+    "text": "White Gray",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.bright_red": {
+    "text": "Bright Red",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.pale_purple": {
+    "text": "Pale Purple",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.iron_gray": {
+    "text": "Iron Gray",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.dark_green": {
+    "text": "Dark Green",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.white": {
+    "text": "White",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.light_blue_gray": {
+    "text": "Light Blue Gray",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.stone_gray": {
+    "text": "Stone Gray",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.water_blue": {
+    "text": "Water Blue",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.oak_tan": {
+    "text": "Oak Tan",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.off_white": {
+    "text": "Off White",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.dirt_brown": {
+    "text": "Dirt Brown",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.floyd_steinberg": {
+    "text": "Floyd-Steinberg",
+    "color": "#FFFFFF"
   }
 }

@@ -19,4 +19,11 @@ public record BlockPalette(Identifier id, String translatableName, int color, Li
     public int hashCode() {
         return Objects.hash(id); // for some reason if we hash the other entries, it breaks hashCode contract??
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BlockPalette palette = (BlockPalette) o;
+        return Objects.equals(id, palette.id);
+    }
 }

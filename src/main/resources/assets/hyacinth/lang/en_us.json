@@ -3,10 +3,6 @@
     "text": "Select Image File",
     "color": "#FFFFFF"
   },
-  "hyacinth.select_file": {
-    "text": "Please select a file to import.",
-    "color": "#FFFFFF"
-  },
   "hyacinth.map_size": {
     "text": "Map Size:",
     "color": "#FFFFFF"
@@ -97,6 +93,10 @@
   },
   "hyacinth.disabled": {
     "text": "Disabled",
+    "color": "#FFFFFF"
+  },
+  "hyacinth.show_grid": {
+    "text": "Show Grid:",
     "color": "#FFFFFF"
   }
 }

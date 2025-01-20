@@ -32,19 +32,22 @@ public class RenderPipeline {
     private File file;
     private ResizingStrategy resizingStrategy = HyacinthResizingStrategies.RESIZING_STRATEGIES.get(Identifier.of("hyacinth", "resizing_strategy/scale_smooth"));
     private DitheringMatrix ditheringMatrix = DitheringMatrix.DITHERING_MATRICES.get(Identifier.of("hyacinth", "dithering_matrix/floyd_steinberg"));
-    private DitheringStrategy ditheringStrategy = HyacinthDitheringStrategies.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "default_dithering_strategy"));
+    private DitheringStrategy ditheringStrategy = HyacinthDitheringStrategies.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/default"));
+    private int mapWidth = 1;
+    private int mapHeight = 1;
 
     public RenderPipeline() {
         selectedBlocks = new HashMap<>();
         tasks = new ArrayList<>();
 
-        Function<BufferedImage, BufferedImage> resizingTask = image -> resizingStrategy.resize(image, 128, 128);
+        Function<BufferedImage, BufferedImage> resizingTask = image -> resizingStrategy.resize(image, mapWidth * 128, mapHeight * 128);
         tasks.add(resizingTask);
     }
 
     public @Nullable BufferedImage process() {
         if (file == null) return null;
 
+        long time = System.currentTimeMillis();
         BufferedImage image;
         try {
             image = ImageIO.read(file);
@@ -55,6 +58,7 @@ public class RenderPipeline {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Process completed in " + (System.currentTimeMillis() - time) + "ms.");
         return image;
     }
 
@@ -80,6 +84,22 @@ public class RenderPipeline {
 
     public DitheringMatrix ditheringMatrix() {
         return ditheringMatrix;
+    }
+
+    public void mapWidth(int width) {
+        this.mapWidth = width;
+    }
+
+    public int mapWidth() {
+        return mapWidth;
+    }
+
+    public void mapHeight(int height) {
+        this.mapHeight = height;
+    }
+
+    public int mapHeight() {
+        return mapHeight;
     }
 
     public List<Function<BufferedImage, BufferedImage>> tasks() {

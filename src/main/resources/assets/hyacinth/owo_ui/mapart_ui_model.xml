@@ -45,11 +45,12 @@
                                 <label>
                                     <text translate="true">hyacinth.map_size</text>
                                 </label>
-                                <text-box id="map_length">
+                                <text-box id="map_width">
                                     <text>1</text>
+                                    <max-length>1</max-length>
                                     <sizing>
-                                        <horizontal method="fixed">10</horizontal>
-                                        <vertical method="fixed">10</vertical>
+                                        <horizontal method="fixed">15</horizontal>
+                                        <vertical method="fixed">15</vertical>
                                     </sizing>
                                 </text-box>
                                 <label>
@@ -57,13 +58,15 @@
                                 </label>
                                 <text-box id="map_height">
                                     <text>1</text>
+                                    <max-length>1</max-length>
                                     <sizing>
-                                        <horizontal method="fixed">10</horizontal>
-                                        <vertical method="fixed">10</vertical>
+                                        <horizontal method="fixed">15</horizontal>
+                                        <vertical method="fixed">15</vertical>
                                     </sizing>
                                 </text-box>
                             </children>
                         </flow-layout>
+
                         <flow-layout direction="horizontal">
                             <children>
                                 <label>
@@ -82,6 +85,7 @@
                                 </flow-layout>
                             </children>
                         </flow-layout>
+
                         <flow-layout direction="horizontal">
                             <children>
                                 <label>
@@ -98,6 +102,17 @@
                                         <horizontal method="content"/>
                                     </sizing>
                                 </flow-layout>
+                            </children>
+                        </flow-layout>
+
+                        <flow-layout direction="horizontal">
+                            <children>
+                                <label>
+                                    <text translate="true">hyacinth.show_grid</text>
+                                </label>
+                                <small-checkbox id="checkbox_show_grid">
+                                    <checked>false</checked>
+                                </small-checkbox>
                             </children>
                         </flow-layout>
                     </children>

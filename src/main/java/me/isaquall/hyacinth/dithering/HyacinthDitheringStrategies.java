@@ -18,7 +18,7 @@ public class HyacinthDitheringStrategies {
     public static final Map<Identifier, DitheringStrategy> DITHERING_STRATEGIES = new HashMap<>();
 
     static {
-        DITHERING_STRATEGIES.put(Identifier.of("hyacinth", "default_dithering_strategy"), (in, ditheringMatrix, palettes, staircasing) -> {
+        DITHERING_STRATEGIES.put(Identifier.of("hyacinth", "dithering_strategy/default"), (in, ditheringMatrix, palettes, staircasing) -> {
             // Generate available colors
             List<Integer> colors = new ArrayList<>();
             for (BlockPalette palette : palettes.keySet()) {
@@ -36,19 +36,19 @@ public class HyacinthDitheringStrategies {
             int[][] mapMatrix = new int[width][height];
 
             if (colors.isEmpty()) {
-                for (int x = 0; x < width; x++) {
-                    for (int y = 0; y < height; y++) {
-                        in.setRGB(x, y, 0);
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
+                        in.setRGB(x, y, 0); // TODO background color here
                     }
                 }
                 return in;
             }
 
-            for (int y = 0; y < height; y++) {
+            for (int y = 0; y < height; y++) { // Note: All of this is in RGB not ARGB
                 for (int x = 0; x < width; x++) {
                     int original = in.getRGB(x, y);
                     int match = ColorUtils.findClosestColor(original, colors);
-                    in.setRGB(x, y, match);
+                    in.setRGB(x, y, ColorHelper.fullAlpha(match));
                     mapMatrix[x][y] = match;
 
                     if (ditheringMatrix != null) {
@@ -69,7 +69,7 @@ public class HyacinthDitheringStrategies {
                                 for (int channel = 0; channel < 3; channel++) {
                                     nextRGB[channel] = (int) Math.clamp(nextRGB[channel] + difference[channel] * ints[2] / scaleFactor, 0, 255);
                                 }
-                                in.setRGB(x + xOffset, y + yOffset, ColorUtils.getRGBInt(nextRGB[0], nextRGB[1], nextRGB[2]));
+                                in.setRGB(x + xOffset, y + yOffset, ColorHelper.fullAlpha(ColorUtils.getRGBInt(nextRGB[0], nextRGB[1], nextRGB[2])));
                             }
                         }
                     }

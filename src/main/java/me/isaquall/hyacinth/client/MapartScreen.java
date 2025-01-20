@@ -2,14 +2,8 @@ package me.isaquall.hyacinth.client;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
-import io.wispforest.owo.ui.container.Containers;
-import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.container.GridLayout;
-import io.wispforest.owo.ui.container.RenderEffectWrapper;
-import io.wispforest.owo.ui.core.Color;
-import io.wispforest.owo.ui.core.Component;
-import io.wispforest.owo.ui.core.Insets;
-import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.ui.container.*;
+import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
@@ -84,13 +78,13 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"), rootComponent);
         rootComponent.childById(ButtonComponent.class, "select_image_file").onPress(button -> openImageFileSelectionWindow(button, rootComponent));
 
-        rootComponent.childById(TextBoxComponent.class, "map_width").onChanged().subscribe(width -> {
+        rootComponent.childById(TextBoxComponent.class, "map_width").text(String.valueOf(RENDER_PIPELINE.mapWidth())).onChanged().subscribe(width -> {
             if (width.isEmpty()) return;
             RENDER_PIPELINE.mapWidth(Integer.parseInt(width));
             redrawImage(rootComponent);
         });
 
-        rootComponent.childById(TextBoxComponent.class, "map_height").onChanged().subscribe(height -> {
+        rootComponent.childById(TextBoxComponent.class, "map_height").text(String.valueOf(RENDER_PIPELINE.mapHeight())).onChanged().subscribe(height -> {
             if (height.isEmpty()) return;
             RENDER_PIPELINE.mapHeight(Integer.parseInt(height));
             redrawImage(rootComponent);
@@ -160,7 +154,10 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
         RenderEffectWrapper<TextureComponent> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(id, 0, 0, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128));
         mapPreviewEffectWrapper.id("map-preview-effect-wrapper");
-        rootComponent.child(mapPreviewEffectWrapper, 1, 0);
+        mapPreviewEffectWrapper.positioning(Positioning.relative(50, 50));
+        FlowLayout previewContainer = rootComponent.childById(FlowLayout.class, "map-preview-container");
+        previewContainer.clearChildren();
+        previewContainer.child(mapPreviewEffectWrapper);
 
         if (rootComponent.childById(SmallCheckboxComponent.class, "checkbox_show_grid").checked()) {
             mapPreviewEffectWrapper.effect(GRID);
@@ -229,6 +226,8 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             return Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(24));
         } else if (blockState == Blocks.WATER.getDefaultState()) {
             return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(24));
+        } else if (blockState == Blocks.COBWEB.getDefaultState()) {
+            return Components.item(Items.COBWEB.getDefaultStack()).sizing(Sizing.fixed(24));
         } else {
             return Components.block(blockState).sizing(Sizing.fixed(24));
         }

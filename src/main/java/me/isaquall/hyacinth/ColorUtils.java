@@ -1,24 +1,27 @@
 package me.isaquall.hyacinth;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-
-import java.util.List;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ColorUtils {
 
-    public static final int[] SCALES = { 180, 220, 255 }; // low, normal, high
+    public static final int[] BRIGHTNESS = { 180, 220, 255 }; // low, normal, high
     public static final Int2IntOpenHashMap RGB_TO_LAB = new Int2IntOpenHashMap();
 
     public static int[] getVariations(int rgb) {
         int[] variations = new int[3];
-        int[] RGBTriple = getRGBTriple(rgb);
         for (int variation = 0; variation < 3; variation++) {
-            variations[variation] = getRGBInt(
-                    Math.clamp((long) RGBTriple[0] * (long) SCALES[variation] / 255L, 0, 255),
-                    Math.clamp((long) RGBTriple[1] * (long) SCALES[variation] / 255L, 0, 255),
-                    Math.clamp((long) RGBTriple[2] * (long) SCALES[variation] / 255L, 0, 255));
+            variations[variation] = scaleRGB(rgb, BRIGHTNESS[variation]);
         }
         return variations;
+    }
+
+    public static int scaleRGB(int rgb, int scale) {
+        int[] RGBTriple = getRGBTriple(rgb);
+        return getRGBInt(
+                Math.clamp((long) RGBTriple[0] * (long) scale / 255L, 0, 255),
+                Math.clamp((long) RGBTriple[1] * (long) scale / 255L, 0, 255),
+                Math.clamp((long) RGBTriple[2] * (long) scale / 255L, 0, 255));
     }
 
     public static int[] getRGBTriple(int rgb) {
@@ -33,14 +36,25 @@ public class ColorUtils {
         return 256 * 256 * r + 256 * g + b;
     }
 
-    public static int findClosestColor(int rgb, List<Integer> colors) {
+    public static int[] findClosestColor(int rgb, IntSet colors, boolean staircasing) {
         double smallestDifference = Double.MAX_VALUE;
-        int bestMatch = 0;
+        int[] bestMatch = { 0, 0 };
         for (int color : colors) {
-            double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(color));
-            if (difference < smallestDifference) {
-                bestMatch = color;
-                smallestDifference = difference;
+            if (staircasing) {
+                int[] variations = getVariations(color);
+                for (int variation = 0; variation < 3; variation++) {
+                    double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(variations[variation]));
+                    if (difference < smallestDifference) {
+                        bestMatch = new int[]{ color, BRIGHTNESS[variation] };
+                        smallestDifference = difference;
+                    }
+                }
+            } else {
+                double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(color));
+                if (difference < smallestDifference) {
+                    bestMatch = new int[]{ color, 255 };
+                    smallestDifference = difference;
+                }
             }
         }
         return bestMatch;

@@ -16,12 +16,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
@@ -42,7 +42,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     private static final RenderEffectWrapper.RenderEffect HIGHLIGHT = new RenderEffectWrapper.RenderEffect() {
         @Override
         public void setup(Component component, DrawContext context, float partialTicks, float delta) {
-            context.drawTexture(RenderLayer::getGuiTextured, Identifier.of("hyacinth", "textures/highlight.png"), component.x(), component.y(), 0, 0, 24, 24, 24, 24);
+            context.fill(component.x(), component.y(), component.x() + 24, component.y() + 24, ColorHelper.getArgb(100, 152, 251, 152));
         }
 
         @Override

@@ -23,6 +23,7 @@ public class DitheringMatrixReloadListener implements SimpleSynchronousResourceR
     public void reload(ResourceManager manager) {
         DitheringMatrix.DITHERING_MATRICES.clear();
 
+        DitheringMatrix.DITHERING_MATRICES.put(Identifier.of("hyacinth", "dithering_matrix/none"), new DitheringMatrix(Identifier.of("hyacinth", "dithering_matrix/none"), "hyacinth.none", 1, null));
         manager.findResources("hyacinth/dithering_matrix", id -> id.getPath().endsWith(".json")).forEach((id, resource) -> process(resource));
     }
 

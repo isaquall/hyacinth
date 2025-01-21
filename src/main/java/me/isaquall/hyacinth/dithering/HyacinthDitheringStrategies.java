@@ -1,6 +1,6 @@
 package me.isaquall.hyacinth.dithering;
 
-import com.google.common.primitives.Ints;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import net.minecraft.block.Blocks;
@@ -8,7 +8,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,20 +19,16 @@ public class HyacinthDitheringStrategies {
     static {
         DITHERING_STRATEGIES.put(Identifier.of("hyacinth", "dithering_strategy/default"), (in, ditheringMatrix, palettes, staircasing) -> {
             // Generate available colors
-            List<Integer> colors = new ArrayList<>();
+            Int2ObjectArrayMap<BlockPalette> colors = new Int2ObjectArrayMap<>();
             for (BlockPalette palette : palettes.keySet()) {
                 if (palettes.get(palette) != Blocks.BARRIER.getDefaultState()) {
-                    if (staircasing) {
-                        colors.addAll(Ints.asList(ColorUtils.getVariations(palette.color())));
-                    } else {
-                        colors.add(palette.color());
-                    }
+                    colors.put(palette.color(), palette);
                 }
             }
 
             int width = in.getWidth();
             int height = in.getHeight();
-            int[][] mapMatrix = new int[width][height];
+            DitheringStrategy.Pixel[][] mapMatrix = new DitheringStrategy.Pixel[width][height];
 
             if (colors.isEmpty()) {
                 for (int y = 0; y < height; y++) {
@@ -41,17 +36,21 @@ public class HyacinthDitheringStrategies {
                         in.setRGB(x, y, 0); // TODO background color here
                     }
                 }
-                return in;
+                return new DitheringStrategy.DitheringResult(new DitheringStrategy.Pixel[0][], in);
             }
 
-            for (int y = 0; y < height; y++) { // Note: All of this is in RGB not ARGB
+            for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
+                    // Convert ARGB to RGB
                     int original = in.getRGB(x, y);
-                    int match = ColorUtils.findClosestColor(original, colors);
-                    in.setRGB(x, y, ColorHelper.fullAlpha(match));
-                    mapMatrix[x][y] = match;
+                    original = ColorUtils.getRGBInt(ColorHelper.getRed(original), ColorHelper.getGreen(original), ColorHelper.getBlue(original));
 
-                    if (ditheringMatrix != null) {
+                    int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing);
+                    int match = ColorUtils.scaleRGB(matchInfo[0], matchInfo[1]);
+                    in.setRGB(x, y, ColorHelper.fullAlpha(match));
+                    mapMatrix[x][y] = new DitheringStrategy.Pixel(matchInfo[0], matchInfo[1], palettes.get(colors.get(matchInfo[0])));
+
+                    if (ditheringMatrix.matrix() != null) {
                         int[] matchRGB = ColorUtils.getRGBTriple(match);
                         int[] originalRGB = ColorUtils.getRGBTriple(original);
                         double[] difference = new double[3];
@@ -78,15 +77,15 @@ public class HyacinthDitheringStrategies {
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    if (colors.contains(mapMatrix[x][y])) {
-                        in.setRGB(x, y, ColorHelper.fullAlpha(mapMatrix[x][y]));
+                    if (colors.keySet().contains(mapMatrix[x][y].color())) {
+                        in.setRGB(x, y, ColorHelper.fullAlpha(ColorUtils.scaleRGB(mapMatrix[x][y].color(), mapMatrix[x][y].brightness())));
                     } else {
                         System.out.println("Invalid color.");
                         in.setRGB(x, y, Color.PINK.getRGB()); // TODO better error handling here
                     }
                 }
             }
-            return in;
+            return new DitheringStrategy.DitheringResult(mapMatrix, in);
         });
     }
 }

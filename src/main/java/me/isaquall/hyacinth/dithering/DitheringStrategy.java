@@ -9,5 +9,13 @@ import java.util.Map;
 
 public interface DitheringStrategy { // TODO javadoc
 
-    BufferedImage dither(BufferedImage in, @Nullable DitheringMatrix matrix, Map<BlockPalette, BlockState> palettes, boolean staircasing);
+    DitheringResult dither(BufferedImage in, DitheringMatrix matrix, Map<BlockPalette, BlockState> palettes, boolean staircasing);
+
+    record Pixel(int color, int brightness, BlockState block) {
+
+    }
+
+    record DitheringResult(Pixel[][] pixels, BufferedImage image) {
+
+    }
 }

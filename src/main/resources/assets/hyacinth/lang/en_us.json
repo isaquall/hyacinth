@@ -98,5 +98,9 @@
   "hyacinth.show_grid": {
     "text": "Show Grid:",
     "color": "#FFFFFF"
+  },
+  "hyacinth.none": {
+    "text": "None",
+    "color": "#FFFFFF"
   }
 }

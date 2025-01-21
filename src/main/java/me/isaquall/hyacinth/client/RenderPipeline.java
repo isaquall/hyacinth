@@ -54,7 +54,8 @@ public class RenderPipeline {
             for (Function<BufferedImage, BufferedImage> task : tasks) {
                 image = task.apply(image);
             }
-            image = ditheringStrategy.dither(image, ditheringMatrix, selectedBlocks, true);
+            DitheringStrategy.DitheringResult ditheringResult = ditheringStrategy.dither(image, ditheringMatrix, selectedBlocks, true);
+            image = ditheringResult.image();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

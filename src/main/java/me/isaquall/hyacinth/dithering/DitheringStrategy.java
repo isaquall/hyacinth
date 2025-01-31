@@ -1,21 +1,12 @@
 package me.isaquall.hyacinth.dithering;
 
-import me.isaquall.hyacinth.block_palette.BlockPalette;
-import net.minecraft.block.BlockState;
-import org.jetbrains.annotations.Nullable;
+import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
+import net.minecraft.util.Identifier;
 
-import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Map;
 
-public interface DitheringStrategy { // TODO javadoc
+public record DitheringStrategy(Identifier id, DitheringAlgorithm ditheringAlgorithm, String translatableName) {
 
-    DitheringResult dither(BufferedImage in, DitheringMatrix matrix, Map<BlockPalette, BlockState> palettes, boolean staircasing);
-
-    record Pixel(int color, int brightness, BlockState block) {
-
-    }
-
-    record DitheringResult(Pixel[][] pixels, BufferedImage image) {
-
-    }
+    public static final Map<Identifier, DitheringStrategy> DITHERING_STRATEGIES = new HashMap<>();
 }

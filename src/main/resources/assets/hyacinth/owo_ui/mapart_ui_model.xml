@@ -89,11 +89,11 @@
                                 <flow-layout direction="horizontal">
                                     <children>
                                         <label>
-                                            <text translate="true">hyacinth.dithering_matrix</text>
+                                            <text translate="true">hyacinth.dithering_strategy</text>
                                         </label>
-                                        <flow-layout direction="vertical" id="dithering_matrix_container">
+                                        <flow-layout direction="vertical" id="dithering_strategy_container">
                                             <children>
-                                                <button id="dithering_matrix">
+                                                <button id="dithering_strategy">
                                                     <text>Pick</text>
                                                 </button>
                                             </children>

@@ -23,8 +23,8 @@
     "text": "Smooth",
     "color": "#FFFFFF"
   },
-  "hyacinth.dithering_matrix": {
-    "text": "Dithering Matrix:",
+  "hyacinth.dithering_strategy": {
+    "text": "Dithering Strategy:",
     "color": "#FFFFFF"
   },
   "hyacinth.pale_green": {

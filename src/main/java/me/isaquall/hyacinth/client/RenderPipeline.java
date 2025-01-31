@@ -1,10 +1,8 @@
 package me.isaquall.hyacinth.client;
 
 import me.isaquall.hyacinth.block_palette.BlockPalette;
-import me.isaquall.hyacinth.dithering.DitheringMatrix;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
-import me.isaquall.hyacinth.dithering.HyacinthDitheringStrategies;
-import me.isaquall.hyacinth.resizing_strategy.HyacinthResizingStrategies;
+import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
@@ -30,9 +28,8 @@ public class RenderPipeline {
     private final List<Function<BufferedImage, BufferedImage>> tasks;
 
     private File file;
-    private ResizingStrategy resizingStrategy = HyacinthResizingStrategies.RESIZING_STRATEGIES.get(Identifier.of("hyacinth", "resizing_strategy/scale_smooth"));
-    private DitheringMatrix ditheringMatrix = DitheringMatrix.DITHERING_MATRICES.get(Identifier.of("hyacinth", "dithering_matrix/floyd_steinberg"));
-    private DitheringStrategy ditheringStrategy = HyacinthDitheringStrategies.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/default"));
+    private ResizingStrategy resizingStrategy = ResizingStrategy.RESIZING_STRATEGIES.get(Identifier.of("hyacinth", "resizing_strategy/scale_smooth"));
+    private DitheringStrategy ditheringStrategy = DitheringStrategy.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/atkinson"));
     private int mapWidth = 1;
     private int mapHeight = 1;
 
@@ -54,7 +51,7 @@ public class RenderPipeline {
             for (Function<BufferedImage, BufferedImage> task : tasks) {
                 image = task.apply(image);
             }
-            DitheringStrategy.DitheringResult ditheringResult = ditheringStrategy.dither(image, ditheringMatrix, selectedBlocks, true);
+            DitheringAlgorithm.DitheringResult ditheringResult = ditheringStrategy.ditheringAlgorithm().dither(image, selectedBlocks, true);
             image = ditheringResult.image();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,20 +68,20 @@ public class RenderPipeline {
         return resizingStrategy;
     }
 
+    public DitheringStrategy ditheringStrategy() {
+        return ditheringStrategy;
+    }
+
+    public void ditheringStrategy(DitheringStrategy ditheringStrategy) {
+        this.ditheringStrategy = ditheringStrategy;
+    }
+
     public void openFile(File file) {
         this.file = file;
     }
 
     public Map<BlockPalette, BlockState> selectedBlocks() {
         return selectedBlocks;
-    }
-
-    public void ditheringMatrix(DitheringMatrix matrix) {
-        this.ditheringMatrix = matrix;
-    }
-
-    public DitheringMatrix ditheringMatrix() {
-        return ditheringMatrix;
     }
 
     public void mapWidth(int width) {

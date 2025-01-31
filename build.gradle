@@ -14,6 +14,7 @@ repositories {
     // for more information about repositories.
     maven { url "https://maven.wispforest.io/releases" }
     maven { url "https://server.bbkr.space/artifactory/libs-release" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -30,6 +31,8 @@ dependencies {
 
     modImplementation "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
     include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
+
+    modImplementation "com.github.sakura-ryoko:litematica:${project.litematica_version}"
 }
 
 processResources {
@@ -43,7 +46,8 @@ processResources {
                 "minecraft_version": project.minecraft_version,
                 "loader_version": project.loader_version,
                 "owo_version": project.owo_version,
-                "jankson_version": project.jankson_version
+                "jankson_version": project.jankson_version,
+                "litematica_version": project.litematica_version
     }
 }
 

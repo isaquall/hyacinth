@@ -2,13 +2,15 @@ package me.isaquall.hyacinth.client;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
-import io.wispforest.owo.ui.container.*;
+import io.wispforest.owo.ui.container.Containers;
+import io.wispforest.owo.ui.container.FlowLayout;
+import io.wispforest.owo.ui.container.GridLayout;
+import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
-import me.isaquall.hyacinth.dithering.DitheringMatrix;
-import me.isaquall.hyacinth.resizing_strategy.HyacinthResizingStrategies;
+import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -103,18 +105,19 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
         resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, HyacinthResizingStrategies.RESIZING_STRATEGIES.values(), ResizingStrategy::name, RENDER_PIPELINE::resizingStrategy);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, RENDER_PIPELINE::resizingStrategy);
             return true;
         });
-        resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().name()));
+        resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
 
-        ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_matrix");
+        // fixme
+        ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_strategy");
         ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_matrix_container"), ditheringMatrixButton, rootComponent, DitheringMatrix.DITHERING_MATRICES.values(), DitheringMatrix::translatableName, RENDER_PIPELINE::ditheringMatrix);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, RENDER_PIPELINE::ditheringStrategy);
             return true;
         });
-        ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringMatrix().translatableName()));
+        ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringStrategy().translatableName()));
 
         redrawImage(rootComponent);
     }
@@ -224,8 +227,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     private Component createBlockStateComponent(BlockState blockState) {
         if (blockState == Blocks.BARRIER.getDefaultState()) {
             return Components.item(Items.BARRIER.getDefaultStack()).sizing(Sizing.fixed(24));
-        } else if (blockState == Blocks.WATER.getDefaultState()) {
-            return Components.item(Items.WATER_BUCKET.getDefaultStack()).sizing(Sizing.fixed(24));
         } else if (blockState == Blocks.COBWEB.getDefaultState()) {
             return Components.item(Items.COBWEB.getDefaultStack()).sizing(Sizing.fixed(24));
         } else {

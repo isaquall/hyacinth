@@ -1,5 +1,5 @@
 {
-  "hyacinth:default_pale_green": {
+  "hyacinth:block_palette/default_pale_green": {
     "color": 8368696,
     "translatableName": "hyacinth.pale_green",
     "blockstates": [{
@@ -8,7 +8,7 @@
       "block": "minecraft:slime_block"
     }]
   },
-  "hyacinth:default_pale_yellow": {
+  "hyacinth:block_palette/default_pale_yellow": {
     "color": 16247203,
     "translatableName": "hyacinth.pale_yellow",
     "blockstates": [{
@@ -40,7 +40,7 @@
       "block": "minecraft:ochre_froglight"
     }]
   },
-  "hyacinth:default_white_gray": {
+  "hyacinth:block_palette/default_white_gray": {
     "color": 13092807,
     "translatableName": "hyacinth.white_gray",
     "blockstates": [{
@@ -51,7 +51,7 @@
       "block": "minecraft:white_candle"
     }]
   },
-  "hyacinth:default_bright_red": {
+  "hyacinth:block_palette/default_bright_red": {
     "color": 16711680,
     "translatableName": "hyacinth.bright_red",
     "blockstates": [{
@@ -60,7 +60,7 @@
       "block": "minecraft:redstone_block"
     }]
   },
-  "hyacinth:default_pale_purple": {
+  "hyacinth:block_palette/default_pale_purple": {
     "color": 10526975,
     "translatableName": "hyacinth.pale_purple",
     "blockstates": [{
@@ -71,7 +71,7 @@
       "block": "minecraft:blue_ice"
     }]
   },
-  "hyacinth:default_iron_gray": {
+  "hyacinth:block_palette/default_iron_gray": {
     "color": 10987431,
     "translatableName": "hyacinth.iron_gray",
     "blockstates": [{
@@ -84,7 +84,7 @@
       "block": "minecraft:brewing_stand"
     }]
   },
-  "hyacinth:default_dark_green": {
+  "hyacinth:block_palette/default_dark_green": {
     "color": 31744,
     "translatableName": "hyacinth.dark_green",
     "blockstates": [{
@@ -106,7 +106,7 @@
       "axis": "x"
     }]
   },
-  "hyacinth:default_white": {
+  "hyacinth:block_palette/default_white": {
     "color": 16777215,
     "translatableName": "hyacinth.white",
     "blockstates": [{
@@ -127,14 +127,14 @@
       "block": "minecraft:snow"
     }]
   },
-  "hyacinth:default_light_blue_gray": {
+  "hyacinth:block_palette/default_light_blue_gray": {
     "color": 10791096,
     "translatableName": "hyacinth.light_blue_gray",
     "blockstates": [{
       "block": "minecraft:clay"
     }]
   },
-  "hyacinth:default_dirt_brown": {
+  "hyacinth:block_palette/default_dirt_brown": {
     "color": 9923917,
     "translatableName": "hyacinth.dirt_brown",
     "blockstates": [{
@@ -162,7 +162,7 @@
       "block": "minecraft:packed_mud"
     }]
   },
-  "hyacinth:default_stone_gray": {
+  "hyacinth:block_palette/default_stone_gray": {
     "color": 7368816,
     "translatableName": "hyacinth.stone_gray",
     "blockstates": [{
@@ -196,14 +196,7 @@
       "block": "minecraft:stone_pressure_plate"
     }]
   },
-  "hyacinth:default_water_blue": {
-    "color": 4210943,
-    "translatableName": "hyacinth.water_blue",
-    "blockstates": [{
-      "block": "minecraft:water"
-    }]
-  },
-  "hyacinth:default_oak_tan": {
+  "hyacinth:block_palette/default_oak_tan": {
     "color": 9402184,
     "translatableName": "hyacinth.oak_tan",
     "blockstates": [{
@@ -219,7 +212,7 @@
       "block": "minecraft:oak_pressure_plate"
     }]
   },
-  "hyacinth:default_off_white": {
+  "hyacinth:block_palette/default_off_white": {
     "color": 16776437,
     "translatableName": "hyacinth.off_white",
     "blockstates": [{

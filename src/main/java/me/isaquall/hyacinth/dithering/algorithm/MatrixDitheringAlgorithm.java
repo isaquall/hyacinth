@@ -1,6 +1,7 @@
 package me.isaquall.hyacinth.dithering.algorithm;
 
 import blue.endless.jankson.Jankson;
+import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.api.SyntaxError;
 import io.github.cottonmc.jankson.JanksonOps;
@@ -28,16 +29,18 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
 
     public MatrixDitheringAlgorithm(JsonObject algorithmEntry) {
         scaleFactor = algorithmEntry.getInt("scale_factor", 1);
-        OPS.getList(algorithmEntry.get("matrix")).getOrThrow(message -> {
-            throw new RuntimeException("Hyacinth failed to read a dithering matrix. " + message); // TODO better logging info?
-        }).accept(element -> {
-            try {
-                JsonObject object = JANKSON.load(element.toJson());
-                matrix.add(new int[]{object.getInt("x", 0), object.getInt("y", 0), object.getInt("value", 0)});
-            } catch (SyntaxError e) {
-                throw new RuntimeException(e);
-            }
-        });
+        if (algorithmEntry.get("matrix") instanceof JsonArray) {
+            OPS.getList(algorithmEntry.get("matrix")).getOrThrow(message -> {
+                throw new RuntimeException("Hyacinth failed to read a dithering algorithm." + message); // TODO better logging info?
+            }).accept(element -> {
+                try {
+                    JsonObject object = JANKSON.load(element.toJson());
+                    matrix.add(new int[]{object.getInt("x", 0), object.getInt("y", 0), object.getInt("value", 0)});
+                } catch (SyntaxError e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
     }
 
     public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing) {

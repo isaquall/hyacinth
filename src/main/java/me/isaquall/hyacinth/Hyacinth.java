@@ -8,9 +8,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 
+import java.util.logging.Logger;
+
 public class Hyacinth implements ModInitializer {
 
     public static final Jankson JANKSON = JanksonFactory.createJankson();
+    public static final Logger LOGGER = Logger.getLogger("[Hyacinth]");
 
     @Override
     public void onInitialize() {

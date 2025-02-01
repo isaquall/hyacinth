@@ -1,0 +1,9 @@
+{
+  "hyacinth:dithering_strategy/none": {
+    "translatableName": "hyacinth.none",
+    "algorithm": {
+      "id": "hyacinth:dithering_algorithm/matrix",
+      "scale_factor": 1
+    }
+  }
+}

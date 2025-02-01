@@ -33,6 +33,7 @@ dependencies {
     include "io.github.cottonmc:Jankson-Fabric:${project.jankson_version}"
 
     modImplementation "com.github.sakura-ryoko:litematica:${project.litematica_version}"
+    modImplementation "com.github.sakura-ryoko:malilib:${project.malilib_version}"
 }
 
 processResources {
@@ -47,7 +48,8 @@ processResources {
                 "loader_version": project.loader_version,
                 "owo_version": project.owo_version,
                 "jankson_version": project.jankson_version,
-                "litematica_version": project.litematica_version
+                "litematica_version": project.litematica_version,
+                "maliblib_version": project.malilib_version
     }
 }
 

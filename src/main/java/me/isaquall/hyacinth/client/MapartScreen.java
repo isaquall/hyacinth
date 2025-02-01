@@ -69,7 +69,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         public void cleanup(Component component, DrawContext drawContext, float v, float v1) { }
     };
 
-    private static final RenderPipeline RENDER_PIPELINE = new RenderPipeline();
+    private static final MapartPipeline RENDER_PIPELINE = new MapartPipeline();
 
     public MapartScreen() {
         super(GridLayout.class, DataSource.asset(Identifier.of("hyacinth", "mapart_ui_model")));
@@ -242,7 +242,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         }
     }
 
-    public static RenderPipeline getRenderPipeline() {
+    public static MapartPipeline getRenderPipeline() {
         return RENDER_PIPELINE;
     }
 }

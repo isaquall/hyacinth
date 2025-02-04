@@ -2,16 +2,17 @@ package me.isaquall.hyacinth;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import net.minecraft.block.MapColor;
 
 public class ColorUtils {
 
-    public static final int[] BRIGHTNESS = { 180, 220, 255 }; // low, normal, high
     public static final Int2IntOpenHashMap RGB_TO_LAB = new Int2IntOpenHashMap();
+    private static final MapColor.Brightness[] BRIGHTNESS = MapColor.Brightness.values();
 
     public static int[] getVariations(int rgb) {
         int[] variations = new int[3];
         for (int variation = 0; variation < 3; variation++) {
-            variations[variation] = scaleRGB(rgb, BRIGHTNESS[variation]);
+            variations[variation] = scaleRGB(rgb, BRIGHTNESS[variation].brightness);
         }
         return variations;
     }
@@ -45,7 +46,7 @@ public class ColorUtils {
                 for (int variation = 0; variation < 3; variation++) {
                     double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(variations[variation]));
                     if (difference < smallestDifference) {
-                        bestMatch = new int[]{ color, BRIGHTNESS[variation] };
+                        bestMatch = new int[]{ color, BRIGHTNESS[variation].brightness };
                         smallestDifference = difference;
                     }
                 }

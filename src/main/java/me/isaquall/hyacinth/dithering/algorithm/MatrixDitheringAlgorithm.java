@@ -84,13 +84,13 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
                         difference[channel] = originalRGB[channel] - matchRGB[channel];
                     }
 
-                    for (int[] ints : matrix) {
-                        int xOffset = ints[0];
-                        int yOffset = ints[1];
+                    for (int[] entry : matrix) {
+                        int xOffset = entry[0];
+                        int yOffset = entry[1];
                         if (x + xOffset < width && x + xOffset >= 0 && y + yOffset < height && y + yOffset >= 0) {
                             int[] nextRGB = ColorUtils.getRGBTriple(in.getRGB(x + xOffset, y + yOffset));
                             for (int channel = 0; channel < 3; channel++) {
-                                nextRGB[channel] = (int) Math.clamp(nextRGB[channel] + difference[channel] * ints[2] / scaleFactor, 0, 255);
+                                nextRGB[channel] = (int) Math.clamp(nextRGB[channel] + difference[channel] * entry[2] / scaleFactor, 0, 255);
                             }
                             in.setRGB(x + xOffset, y + yOffset, ColorHelper.fullAlpha(ColorUtils.getRGBInt(nextRGB[0], nextRGB[1], nextRGB[2])));
                         }

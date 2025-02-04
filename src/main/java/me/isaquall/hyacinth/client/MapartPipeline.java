@@ -83,7 +83,6 @@ public class MapartPipeline {
         ((LitematicaSchematicMixin) schematic).getSubRegionPositions().put("box", new BlockPos(0, 0, 0));
         ((LitematicaSchematicMixin) schematic).getTileEntities().put("box", new HashMap<>());
 
-
         schematic.getMetadata().setSchematicVersion(7);
         schematic.getMetadata().setMinecraftDataVersion(LitematicaSchematic.MINECRAFT_DATA_VERSION);
         schematic.getMetadata().setFileType(FileType.LITEMATICA_SCHEMATIC);

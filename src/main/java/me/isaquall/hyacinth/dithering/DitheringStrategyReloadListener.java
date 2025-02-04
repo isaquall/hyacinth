@@ -3,7 +3,6 @@ package me.isaquall.hyacinth.dithering;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.api.SyntaxError;
-import io.github.cottonmc.jankson.JanksonOps;
 import me.isaquall.hyacinth.Hyacinth;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -13,12 +12,10 @@ import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 public class DitheringStrategyReloadListener implements SimpleSynchronousResourceReloadListener {
 
     private static final Jankson JANKSON = Hyacinth.JANKSON;
-    private static final JanksonOps OPS = JanksonOps.INSTANCE;
 
     @Override
     public void reload(ResourceManager manager) {

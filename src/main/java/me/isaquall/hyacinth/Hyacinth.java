@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 public class Hyacinth implements ModInitializer {
 
     public static final Jankson JANKSON = JanksonFactory.createJankson();
-    public static final Logger LOGGER = Logger.getLogger("[Hyacinth]");
 
     @Override
     public void onInitialize() {

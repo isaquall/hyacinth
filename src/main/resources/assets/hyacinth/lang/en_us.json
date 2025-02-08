@@ -118,5 +118,47 @@
   "hyacinth.failed_to_read_dithering_strategy": [
     { "text": "Failed to read dithering strategy: ", "color": "white" },
     { "index": 0, "color": "red" }
+  ],
+  "hyacinth.orange": [
+    { "text": "Orange", "color": "white" }
+  ],
+  "hyacinth.magenta": [
+    { "text": "Magenta", "color": "white" }
+  ],
+  "hyacinth.light_blue": [
+    { "text": "Light Blue", "color": "white" }
+  ],
+  "hyacinth.yellow": [
+    { "text": "Yellow", "color": "white" }
+  ],
+  "hyacinth.pink": [
+    { "text": "Pink", "color": "white" }
+  ],
+  "hyacinth.gray": [
+    { "text": "Gray", "color": "white" }
+  ],
+  "hyacinth.light_gray": [
+    { "text": "Light Gray", "color": "white" }
+  ],
+  "hyacinth.cyan": [
+    { "text": "Cyan", "color": "white" }
+  ],
+  "hyacinth.purple": [
+    { "text": "Purple", "color": "white" }
+  ],
+  "hyacinth.blue": [
+    { "text": "Blue", "color": "white" }
+  ],
+  "hyacinth.brown": [
+    { "text": "Brown", "color": "white" }
+  ],
+  "hyacinth.red": [
+    { "text": "Red", "color": "white" }
+  ],
+  "hyacinth.black": [
+    { "text": "Black", "color": "white" }
+  ],
+  "hyacinth.gold": [
+    { "text": "Gold", "color": "white" }
   ]
 }

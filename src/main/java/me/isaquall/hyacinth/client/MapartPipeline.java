@@ -1,6 +1,6 @@
 package me.isaquall.hyacinth.client;
 
-import me.isaquall.hyacinth.SchematicWriter;
+import me.isaquall.hyacinth.schematic.SchematicWriter;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;

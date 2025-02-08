@@ -1,4 +1,4 @@
-package me.isaquall.hyacinth;
+package me.isaquall.hyacinth.schematic;
 
 import fi.dy.masa.litematica.data.SchematicHolder;
 import fi.dy.masa.litematica.schematic.LitematicaSchematic;
@@ -19,9 +19,8 @@ import java.util.List;
 
 public class SchematicWriter {
 
-    static TerrainSlice[] slices = new TerrainSlice[130];
-
     public static void createSchematic(DitheringAlgorithm.Pixel[][] pixels) {
+        TerrainSlice[] slices = new TerrainSlice[pixels.length];
         LitematicaSchematic schematic = LitematicaSchematicMixin.newLitematicaSchematic(null);
 //        schematic.setSubRegionPositions(boxes, area.getEffectiveOrigin());
 //        schematic.setSubRegionSizes(boxes);
@@ -69,7 +68,7 @@ public class SchematicWriter {
 
         public void writeTerrain(LitematicaBlockStateContainer container, int x) {
             int currentHeight = 0;
-            for (int z = 127; z >= 0; z--) {
+            for (int z = 127; z >= 0; z--) { // TODO add support for larger maps
                 ArrayList<PlannedBlock> plannedBlocks = blocks[z];
                 DitheringAlgorithm.Pixel pixel = slice[z];
                 BlockState blockState = pixel.blockState();

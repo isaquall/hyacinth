@@ -1,106 +1,122 @@
 {
   "hyacinth.button_select_image_file":{
     "text": "Select Image File",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.map_size": {
     "text": "Map Size:",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.resizing_strategy": {
     "text": "Resizing Strategy:",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.mapart_screen_keybind": {
     "text": "Open Mapart Screen",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.scale_default": {
     "text": "Default",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.scale_smooth": {
     "text": "Smooth",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.dithering_strategy": {
     "text": "Dithering Strategy:",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.pale_green": {
     "text": "Pale Green",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.pale_yellow": {
     "text": "Pale Yellow",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.white_gray": {
     "text": "White Gray",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.bright_red": {
     "text": "Bright Red",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.pale_purple": {
     "text": "Pale Purple",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.iron_gray": {
     "text": "Iron Gray",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.dark_green": {
     "text": "Dark Green",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.white": {
     "text": "White",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.light_blue_gray": {
     "text": "Light Blue Gray",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.stone_gray": {
     "text": "Stone Gray",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.water_blue": {
     "text": "Water Blue",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.oak_tan": {
     "text": "Oak Tan",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.off_white": {
     "text": "Off White",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.dirt_brown": {
     "text": "Dirt Brown",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.floyd_steinberg": {
     "text": "Floyd-Steinberg",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.atkinson": {
     "text": "Atkinson",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.disabled": {
     "text": "Disabled",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.show_grid": {
     "text": "Show Grid:",
-    "color": "#FFFFFF"
+    "color": "white"
   },
   "hyacinth.none": {
     "text": "None",
-    "color": "#FFFFFF"
-  }
+    "color": "white"
+  },
+  "hyacinth.error": {
+    "text": "Hyacinth Error",
+    "color": "red"
+  },
+  "hyacinth.failed_to_load_palette": [
+    { "text": "Failed to load block palette: ", "color": "white" },
+    { "index": 0, "color": "red" }
+  ],
+  "hyacinth.failed_to_create_matrix_dithering_algorithm": [
+    { "text": "Failed to create matrix dithering algorithm: ", "color": "white" },
+    { "index": 0, "color": "red" }
+  ],
+  "hyacinth.failed_to_read_dithering_strategy": [
+    { "text": "Failed to read dithering strategy: ", "color": "white" },
+    { "index": 0, "color": "red" }
+  ]
 }

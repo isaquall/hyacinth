@@ -5,13 +5,17 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.api.SyntaxError;
 import me.isaquall.hyacinth.Hyacinth;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
+import me.isaquall.hyacinth.ui.HyacinthToast;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class DitheringStrategyReloadListener implements SimpleSynchronousResourceReloadListener {
 
@@ -33,11 +37,15 @@ public class DitheringStrategyReloadListener implements SimpleSynchronousResourc
                 JsonObject entry = JANKSON.load(file.get(key).toJson());
                 JsonObject algorithmEntry = JANKSON.load(entry.get("algorithm").toJson());
                 Class<? extends DitheringAlgorithm> algorithmClass = DitheringAlgorithm.DITHERING_ALGORITHMS.get(Identifier.of(algorithmEntry.get(String.class, "id")));
-                DitheringAlgorithm algorithm = algorithmClass.getDeclaredConstructor(JsonObject.class).newInstance(algorithmEntry);
+                DitheringAlgorithm algorithm = algorithmClass.getDeclaredConstructor(String.class, JsonObject.class).newInstance(id.toString(), algorithmEntry);
                 DitheringStrategy.DITHERING_STRATEGIES.put(id, new DitheringStrategy(id, algorithm, entry.get(String.class, "translatableName")));
             }
         } catch (IOException | SyntaxError | NullPointerException | NoSuchMethodException | IllegalAccessException |
                  InstantiationException | InvocationTargetException e) {
+            MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
+                    Text.translatable("hyacinth.error"),
+                    Text.translatable("hyacinth.failed_to_read_dithering_strategy", resource.getPackId()),
+                    Text.of(e.toString()))));
             throw new RuntimeException(e);
         }
     }

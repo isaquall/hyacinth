@@ -1,4 +1,4 @@
-package me.isaquall.hyacinth.client;
+package me.isaquall.hyacinth.ui;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
@@ -10,6 +10,7 @@ import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
+import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import net.fabricmc.api.EnvType;
@@ -110,7 +111,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         });
         resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
 
-        // fixme
         ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_strategy");
         ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();

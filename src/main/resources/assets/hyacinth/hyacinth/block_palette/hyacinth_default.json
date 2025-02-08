@@ -3,7 +3,7 @@
     "color": 8368696,
     "translatableName": "hyacinth.pale_green",
     "blockstates": [{
-      "block": "minecraft:grass_block"
+      "block": "minecraft:grass_blockd"
     }, {
       "block": "minecraft:slime_block"
     }]

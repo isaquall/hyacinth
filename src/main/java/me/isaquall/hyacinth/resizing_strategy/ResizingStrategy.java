@@ -13,11 +13,7 @@ public interface ResizingStrategy {
         Identifier.of("hyacinth", "resizing_strategy/scale_default"), new ResizingStrategy() {
             @Override
             public BufferedImage resize(BufferedImage in, int x, int y) {
-                BufferedImage out = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics = out.createGraphics();
-                graphics.drawImage(in.getScaledInstance(x, y, Image.SCALE_DEFAULT), 0, 0, null);
-                graphics.dispose();
-                return out;
+                return simpleResize(in, x, y, Image.SCALE_DEFAULT);
             }
 
             @Override
@@ -28,11 +24,7 @@ public interface ResizingStrategy {
         Identifier.of("hyacinth", "resizing_strategy/scale_smooth"), new ResizingStrategy() {
             @Override
             public BufferedImage resize(BufferedImage in, int x, int y) {
-                BufferedImage out = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics = out.createGraphics();
-                graphics.drawImage(in.getScaledInstance(x, y, Image.SCALE_SMOOTH), 0, 0, null);
-                graphics.dispose();
-                return out;
+                return simpleResize(in, x, y, Image.SCALE_SMOOTH);
             }
 
             @Override
@@ -41,6 +33,14 @@ public interface ResizingStrategy {
             }
         }
     ));
+
+    static BufferedImage simpleResize(BufferedImage in, int x, int y, int mode) {
+        BufferedImage out = new BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = out.createGraphics();
+        graphics.drawImage(in.getScaledInstance(x, y, mode), 0, 0, null);
+        graphics.dispose();
+        return out;
+    }
 
     /**
      * Takes in an {@link BufferedImage} and returns a new {@link BufferedImage} of the new size.

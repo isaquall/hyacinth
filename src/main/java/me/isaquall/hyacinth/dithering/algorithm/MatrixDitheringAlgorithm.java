@@ -9,8 +9,11 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.Hyacinth;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
+import me.isaquall.hyacinth.ui.HyacinthToast;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ColorHelper;
 
 import java.awt.*;
@@ -27,17 +30,19 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
     private final List<int[]> matrix = new ArrayList<>();
     private final int scaleFactor;
 
-    public MatrixDitheringAlgorithm(JsonObject algorithmEntry) {
+    public MatrixDitheringAlgorithm(String id, JsonObject algorithmEntry) {
         scaleFactor = algorithmEntry.getInt("scale_factor", 1);
         if (algorithmEntry.get("matrix") instanceof JsonArray) {
             OPS.getList(algorithmEntry.get("matrix")).getOrThrow(message -> {
-                throw new RuntimeException("Hyacinth failed to read a dithering algorithm." + message); // TODO better logging info?
+                error(id, message);
+                throw new RuntimeException("Hyacinth failed to read a dithering algorithm." + message);
             }).accept(element -> {
                 try {
                     JsonObject object = JANKSON.load(element.toJson());
                     matrix.add(new int[]{object.getInt("x", 0), object.getInt("y", 0), object.getInt("value", 0)});
                 } catch (SyntaxError e) {
-                    throw new RuntimeException(e);
+                    error(id, e.toString());
+                    throw new RuntimeException("Hyacinth failed to read a dithering algorithm." + e);
                 }
             });
         }
@@ -110,5 +115,12 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
             }
         }
         return new DitheringResult(mapMatrix, in);
+    }
+
+    private static void error(String id, String message) {
+        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
+                Text.translatable("hyacinth.error"),
+                Text.translatable("hyacinth.failed_to_create_matrix_dithering_algorithm", id),
+                Text.of(message))));
     }
 }

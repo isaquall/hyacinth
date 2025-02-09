@@ -37,7 +37,7 @@ public class DitheringStrategyReloadListener implements SimpleSynchronousResourc
                 JsonObject entry = JANKSON.load(file.get(key).toJson());
                 JsonObject algorithmEntry = JANKSON.load(entry.get("algorithm").toJson());
                 Class<? extends DitheringAlgorithm> algorithmClass = DitheringAlgorithm.DITHERING_ALGORITHMS.get(Identifier.of(algorithmEntry.get(String.class, "id")));
-                DitheringAlgorithm algorithm = algorithmClass.getDeclaredConstructor(String.class, JsonObject.class).newInstance(id.toString(), algorithmEntry);
+                DitheringAlgorithm algorithm = algorithmClass.getDeclaredConstructor(Identifier.class, JsonObject.class).newInstance(id, algorithmEntry);
                 DitheringStrategy.DITHERING_STRATEGIES.put(id, new DitheringStrategy(id, algorithm, entry.get(String.class, "translatableName")));
             }
         } catch (IOException | SyntaxError | NullPointerException | NoSuchMethodException | IllegalAccessException |

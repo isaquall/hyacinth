@@ -1,10 +1,10 @@
 package me.isaquall.hyacinth.client;
 
-import me.isaquall.hyacinth.schematic.SchematicWriter;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
+import me.isaquall.hyacinth.schematic.SchematicWriter;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;

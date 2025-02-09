@@ -34,7 +34,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -142,7 +141,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     }
 
     private void redrawImage(GridLayout rootComponent) {
-        Identifier id = Identifier.of("hyacinth", UUID.randomUUID() + "_resized");
+        Identifier id = Identifier.of("hyacinth", "map_preview");
 
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             BufferedImage image = RENDER_PIPELINE.process();

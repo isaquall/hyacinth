@@ -11,6 +11,7 @@
   "license": "MIT",
   "icon": "assets/hyacinth/icon.png",
   "environment": "client",
+  "accesswidener": "hyacinth.accesswidener",
   "entrypoints": {
     "client": [
       "me.isaquall.hyacinth.client.HyacinthClient"

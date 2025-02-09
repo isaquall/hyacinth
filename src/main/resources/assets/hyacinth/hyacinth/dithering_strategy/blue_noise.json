@@ -1,0 +1,10 @@
+{
+  "hyacinth:dithering_strategy/blue_noise": {
+    "translatableName": "hyacinth.blue_noise_4",
+    "algorithm": {
+      "id": "hyacinth:dithering_algorithm/noise",
+      "noise": "hyacinth:noise/hdr_grayscale128x128",
+      "sample_size": 4
+    }
+  }
+}

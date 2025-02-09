@@ -1,6 +1,6 @@
 plugins {
-    id 'fabric-loom' version '1.9-SNAPSHOT'
-    id 'maven-publish'
+    id "fabric-loom" version "1.9-SNAPSHOT"
+    id "maven-publish"
 }
 
 version = project.mod_version
@@ -9,7 +9,7 @@ group = project.maven_group
 repositories {
     maven { url "https://maven.wispforest.io/releases" }
     maven { url "https://server.bbkr.space/artifactory/libs-release" }
-    maven { url 'https://jitpack.io' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -41,6 +41,23 @@ processResources {
                 "litematica_version": project.litematica_version,
                 "maliblib_version": project.malilib_version
     }
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}"}
+    }
+
+    from {
+        configurations.modCompileOnly.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        include "fi/dy/masa/litematica/schematic/**"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/hyacinth.accesswidener")
 }
 
 java {

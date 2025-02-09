@@ -160,5 +160,8 @@
   ],
   "hyacinth.gold": [
     { "text": "Gold", "color": "white" }
+  ],
+  "hyacinth.blue_noise_4": [
+    { "text": "Blue Noise (4x4)", "color": "white" }
   ]
 }

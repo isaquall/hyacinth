@@ -1,5 +1,6 @@
 package me.isaquall.hyacinth.client;
 
+import me.isaquall.hyacinth.noise.NoiseManager;
 import me.isaquall.hyacinth.ui.MapartScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -14,6 +15,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class HyacinthClient implements ClientModInitializer {
 
     private final KeyBinding mapartScreenBinding = new KeyBinding("hyacinth.mapart_screen_keybind", GLFW.GLFW_KEY_Z, "Hyacinth");
+    public static NoiseManager NOISE_MANAGER;
 
     @Override
     public void onInitializeClient() {

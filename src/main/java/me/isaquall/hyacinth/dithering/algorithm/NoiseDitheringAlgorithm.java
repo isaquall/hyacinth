@@ -44,11 +44,10 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
             return new DitheringResult(new Pixel[0][], in);
         }
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 // Convert ARGB to RGB
-                int original = in.getRGB(x, y);
-                original = ColorUtils.getRGBInt(ColorHelper.getRed(original), ColorHelper.getGreen(original), ColorHelper.getBlue(original));
+                int original = ColorUtils.convertARGBtoRGB(in.getRGB(x, y));
                 int[] originalRGB = ColorUtils.getRGBTriple(original);
 
                 int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing);
@@ -67,13 +66,11 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
                     for (int noiseY = 0; noiseY < sampleSize; noiseY++) {
                         if (noiseX == 0 && noiseY == 0) continue;
                         if (x + noiseX < width && x + noiseX >= 0 && y + noiseY < height && y + noiseY >= 0) {
-                            int oldRGB = in.getRGB(x + noiseX, y + noiseY);
-                            int[] oldRGBTriple = {ColorHelper.getRed(oldRGB), ColorHelper.getGreen(oldRGB), ColorHelper.getBlue(oldRGB)};
-                            int[] newRGB = new int[3];
+                            int[] nextRGB = ColorUtils.getRGBTriple(in.getRGB(x + noiseX, y + noiseY));
                             for (int channel = 0; channel < 3; channel++) {
-                                newRGB[channel] = (int) Math.clamp(oldRGBTriple[channel] + (difference[channel] * sample[noiseX][noiseY][channel]), 0, 255);
+                                nextRGB[channel] = (int) Math.clamp(nextRGB[channel] + difference[channel] * sample[noiseX][noiseY][channel], 0, 255);
                             }
-                            in.setRGB(x + noiseX, y + noiseY, ColorHelper.fullAlpha(ColorUtils.getRGBInt(newRGB[0], newRGB[1], newRGB[2])));
+                            in.setRGB(x + noiseX, y + noiseY, ColorHelper.fullAlpha(ColorUtils.getRGBInt(nextRGB[0], nextRGB[1], nextRGB[2])));
                         }
                     }
                 }
@@ -83,15 +80,7 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
         return new DitheringResult(mapMatrix, in);
     }
 
-    private static class NoiseSample {
-
-        private final int[][] colors;
-        private final int sampleSize;
-
-        NoiseSample(int[][] colors, int sampleSize) {
-            this.colors = colors;
-            this.sampleSize = sampleSize;
-        }
+    private record NoiseSample(int[][] colors, int sampleSize) {
 
         public static NoiseSample create(NativeImage noise, int sampleSize, int posX, int posY) {
             int[][] colors = new int[sampleSize][sampleSize];
@@ -130,10 +119,6 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
                 }
             }
             return normalized;
-        }
-
-        public int[][] colors() {
-            return colors;
         }
     }
 }

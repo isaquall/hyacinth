@@ -22,29 +22,23 @@ public class SchematicWriter {
     public static void createSchematic(DitheringAlgorithm.Pixel[][] pixels) {
         TerrainSlice[] slices = new TerrainSlice[pixels.length];
         LitematicaSchematic schematic = LitematicaSchematicMixin.newLitematicaSchematic(null);
-//        schematic.setSubRegionPositions(boxes, area.getEffectiveOrigin());
-//        schematic.setSubRegionSizes(boxes);
         schematic.getMetadata().setAuthor(MinecraftClient.getInstance().player.getName().getString());
         schematic.getMetadata().setName("Mapart Schematic");
         schematic.getMetadata().setRegionCount(1);
-
-        Box box = new Box(new BlockPos(0, 0, 0), new BlockPos(129, 129, 129), "map");
+        Box box = new Box(new BlockPos(0, 0, 0), new BlockPos(pixels.length, pixels[0].length, 130), "map");
         schematic.getMetadata().setTotalVolume(PositionUtils.getTotalVolume(List.of(box)));
         schematic.getMetadata().setEnclosingSize(PositionUtils.getEnclosingAreaSize(List.of(box)));
-        ((LitematicaSchematicMixin) schematic).getSubRegionSizes().put("map", new BlockPos(129, 129, 129));
+        ((LitematicaSchematicMixin) schematic).getSubRegionSizes().put("map", new BlockPos(pixels.length, pixels[0].length, 130));
         ((LitematicaSchematicMixin) schematic).getSubRegionPositions().put("map", new BlockPos(0, 0, 0));
         ((LitematicaSchematicMixin) schematic).getTileEntities().put("map", new HashMap<>());
-
         schematic.getMetadata().setSchematicVersion(7);
         schematic.getMetadata().setMinecraftDataVersion(LitematicaSchematic.MINECRAFT_DATA_VERSION);
         schematic.getMetadata().setFileType(FileType.LITEMATICA_SCHEMATIC);
-        LitematicaBlockStateContainer container = new LitematicaBlockStateContainer(Math.abs(box.getSize().getX()), Math.abs(box.getSize().getY()), Math.abs(box.getSize().getZ()));
-
-        ((LitematicaSchematicMixin) schematic).getBlockContainers().put("map", container);
-
-        schematic.getMetadata().setTotalBlocks(129*129*2);
-
+        schematic.getMetadata().setTotalBlocks(pixels.length*pixels[0].length*2);
         SchematicHolder.getInstance().addSchematic(schematic, false);
+
+        LitematicaBlockStateContainer container = new LitematicaBlockStateContainer(Math.abs(box.getSize().getX()), Math.abs(box.getSize().getY()), Math.abs(box.getSize().getZ()));
+//        ((LitematicaSchematicMixin) schematic).getBlockContainers().put("map", container);
 
         for (int x = 0; x < pixels.length; x++) {
             DitheringAlgorithm.Pixel[] slice = pixels[x];

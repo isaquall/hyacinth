@@ -1,6 +1,5 @@
 package me.isaquall.hyacinth.mixin;
 
-import me.isaquall.hyacinth.block_palette.BlockPaletteReloadListener;
 import me.isaquall.hyacinth.client.HyacinthClient;
 import me.isaquall.hyacinth.noise.NoiseManager;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;

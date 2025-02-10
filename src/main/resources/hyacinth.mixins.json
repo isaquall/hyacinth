@@ -3,7 +3,6 @@
   "minVersion": "0.8",
   "package": "me.isaquall.hyacinth.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "me.isaquall.hyacinth.HyacinthMixinPlugin",
   "mixins": [
   ],
   "client": [

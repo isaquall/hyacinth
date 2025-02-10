@@ -3,11 +3,16 @@ package me.isaquall.hyacinth;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.block.MapColor;
+import net.minecraft.util.math.ColorHelper;
 
 public class ColorUtils {
 
     public static final Int2IntOpenHashMap RGB_TO_LAB = new Int2IntOpenHashMap();
     private static final MapColor.Brightness[] BRIGHTNESS = MapColor.Brightness.values();
+
+    static {
+        RGB_TO_LAB.defaultReturnValue(-1);
+    }
 
     public static int[] getVariations(int rgb) {
         int[] variations = new int[3];
@@ -35,6 +40,10 @@ public class ColorUtils {
 
     public static int getRGBInt(int r, int g, int b) {
         return 256 * 256 * r + 256 * g + b;
+    }
+
+    public static int convertARGBtoRGB(int argb) {
+        return ColorUtils.getRGBInt(ColorHelper.getRed(argb), ColorHelper.getGreen(argb), ColorHelper.getBlue(argb));
     }
 
     public static int[] findClosestColor(int rgb, IntSet colors, boolean staircasing) {
@@ -67,8 +76,9 @@ public class ColorUtils {
 
     // Copied from: https://github.com/redstonehelper/MapConverter/blob/main/MapConverter.java#L496
     private static int[] RGB2LAB(int rgb) {
-        if (RGB_TO_LAB.containsKey(rgb)) {
-            return getRGBTriple(RGB_TO_LAB.get(rgb));
+        int result = RGB_TO_LAB.get(rgb);
+        if (result != -1) {
+            return getRGBTriple(result);
         } else {
             int[] RGBTriple = getRGBTriple(rgb);
             double[] values = new double[3];

@@ -21,9 +21,8 @@ dependencies {
 
     include modImplementation("io.wispforest:owo-lib:${project.owo_version}")
     include modImplementation("io.github.cottonmc:Jankson-Fabric:${project.jankson_version}")
-
-    modCompileOnly "com.github.sakura-ryoko:litematica:${project.litematica_version}"
-    modCompileOnly "com.github.sakura-ryoko:malilib:${project.malilib_version}"
+    include modImplementation("com.github.sakura-ryoko:litematica:${project.minecraft_version}-${project.litematica_version}")
+    include modImplementation("com.github.sakura-ryoko:malilib:${project.minecraft_version}-${project.malilib_version}")
 }
 
 processResources {
@@ -39,20 +38,13 @@ processResources {
                 "owo_version": project.owo_version,
                 "jankson_version": project.jankson_version,
                 "litematica_version": project.litematica_version,
-                "maliblib_version": project.malilib_version
+                "malilib_version": project.malilib_version
     }
 }
 
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}"}
-    }
-
-    from {
-        configurations.modCompileOnly.collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        include "fi/dy/masa/litematica/schematic/**"
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
 

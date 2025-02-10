@@ -3,7 +3,7 @@
     "translatableName": "hyacinth.blue_noise_4",
     "algorithm": {
       "id": "hyacinth:dithering_algorithm/noise",
-      "noise": "hyacinth:noise/hdr_grayscale128x128",
+      "noise": "hyacinth:noise/gaussian_hdr_grayscale128x128",
       "sample_size": 4
     }
   }

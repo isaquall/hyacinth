@@ -55,7 +55,7 @@ public class MapartPipeline {
             }
             DitheringAlgorithm.DitheringResult ditheringResult = ditheringStrategy.ditheringAlgorithm().dither(image, selectedBlocks, true);
             image = ditheringResult.image();
-            SchematicWriter.createSchematic(ditheringResult.pixels());
+//            SchematicWriter.createSchematic(ditheringResult.pixels());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

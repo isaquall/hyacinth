@@ -67,9 +67,7 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                // Convert ARGB to RGB
-                int original = in.getRGB(x, y);
-                original = ColorUtils.getRGBInt(ColorHelper.getRed(original), ColorHelper.getGreen(original), ColorHelper.getBlue(original));
+                int original = ColorUtils.convertARGBtoRGB(in.getRGB(x, y));
 
                 int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing);
                 int match = ColorUtils.scaleRGB(matchInfo[0], matchInfo[1]);

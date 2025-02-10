@@ -169,7 +169,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     private void openImageFileSelectionWindow(ButtonComponent button, GridLayout rootComponent) {
         UISounds.playButtonSound();
         button.active(false);
-
+        (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator)).mkdirs();
         String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
         if (file != null) {

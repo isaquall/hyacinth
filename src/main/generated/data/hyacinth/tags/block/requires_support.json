@@ -3,6 +3,17 @@
     "minecraft:sand",
     "minecraft:red_sand",
     "minecraft:gravel",
+    "minecraft:stone_pressure_plate",
+    "minecraft:oak_pressure_plate",
+    "minecraft:spruce_pressure_plate",
+    "minecraft:birch_pressure_plate",
+    "minecraft:jungle_pressure_plate",
+    "minecraft:acacia_pressure_plate",
+    "minecraft:cherry_pressure_plate",
+    "minecraft:dark_oak_pressure_plate",
+    "minecraft:pale_oak_pressure_plate",
+    "minecraft:mangrove_pressure_plate",
+    "minecraft:bamboo_pressure_plate",
     "minecraft:dragon_egg",
     "minecraft:anvil",
     "minecraft:chipped_anvil",
@@ -39,6 +50,9 @@
     "minecraft:green_concrete_powder",
     "minecraft:red_concrete_powder",
     "minecraft:black_concrete_powder",
+    "minecraft:crimson_pressure_plate",
+    "minecraft:warped_pressure_plate",
+    "minecraft:polished_blackstone_pressure_plate",
     "minecraft:moss_carpet"
   ]
 }

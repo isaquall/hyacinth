@@ -161,7 +161,34 @@
   "hyacinth.gold": [
     { "text": "Gold", "color": "white" }
   ],
-  "hyacinth.blue_noise_4": [
-    { "text": "Blue Noise (4x4)", "color": "white" }
+  "hyacinth.blue_noise_grayscale_4": [
+    { "text": "Blue Noise (Grayscale 4x4)", "color": "white" }
+  ],
+  "hyacinth.blue_noise_rgb_4": [
+    { "text": "Blue Noise (RGB 4x4)", "color": "white" }
+  ],
+  "hyacinth.export_type": [
+    { "text": "Export As:", "color": "white" }
+  ],
+  "hyacinth.support_mode.never": [
+    { "text": "Never", "color": "white" }
+  ],
+  "hyacinth.support_mode.only_required": [
+    { "text": "Only Required", "color": "white" }
+  ],
+  "hyacinth.support_mode.always": [
+    { "text": "Always", "color": "white" }
+  ],
+  "hyacinth.support_mode.never_tooltip": [
+    { "text": "This mode will never place support blocks.", "color": "white" }
+  ],
+  "hyacinth.support_mode.only_required_tooltip": [
+    { "text": "This mode will place support blocks only where required, i.e. blocks affected by gravity.", "color": "white" }
+  ],
+  "hyacinth.support_mode.always_tooltip": [
+    { "text": "This mode will place support blocks under every block.", "color": "white" }
+  ],
+  "hyacinth.support_mode": [
+    { "text": "Support Mode:", "color": "white" }
   ]
 }

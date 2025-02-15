@@ -3,12 +3,11 @@
   "minVersion": "0.8",
   "package": "me.isaquall.hyacinth.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
   "client": [
     "LitematicaSchematicMixin",
     "MinecraftClientMixin",
-    "SpriteContentsAccessor"
+    "SpriteContentsAccessor",
+    "DropdownComponentAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

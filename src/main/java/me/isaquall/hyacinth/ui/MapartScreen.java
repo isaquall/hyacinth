@@ -1,5 +1,6 @@
 package me.isaquall.hyacinth.ui;
 
+import fi.dy.masa.litematica.util.FileType;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.Containers;
@@ -12,7 +13,9 @@ import me.isaquall.hyacinth.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
+import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
+import me.isaquall.hyacinth.schematic.SupportMode;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -22,9 +25,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.Items;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
@@ -34,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -105,7 +111,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
         resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, RENDER_PIPELINE::resizingStrategy);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy);
             return true;
         });
         resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
@@ -113,29 +119,55 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_strategy");
         ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, RENDER_PIPELINE::ditheringStrategy);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy);
             return true;
         });
         ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringStrategy().translatableName()));
 
+        ButtonComponent exportTypeButton = rootComponent.childById(ButtonComponent.class, "export_type");
+        exportTypeButton.mouseDown().subscribe((x, y, button) -> {
+            UISounds.playButtonSound();
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "export_type_container"), exportTypeButton, rootComponent, List.of(FileType.values()), FileType::name, null, RENDER_PIPELINE::exportType);
+            return true;
+        });
+        exportTypeButton.setMessage(Text.literal(RENDER_PIPELINE.exportType().name()));
+
+        ButtonComponent supportModeButton = rootComponent.childById(ButtonComponent.class, "support_mode");
+        supportModeButton.mouseDown().subscribe((x, y, button) -> {
+            UISounds.playButtonSound();
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "support_mode_container"), supportModeButton, rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode);
+            return true;
+        });
+        supportModeButton.setMessage(Text.translatable(RENDER_PIPELINE.supportMode().translatableName()));
+
         redrawImage(rootComponent);
     }
 
-    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, Consumer<T> update) {
+    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> update) {
         if (!button.active()) return;
 
         button.active(false);
         DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
         for (T option : options) {
-            String nameTranslationKey = nameFunction.apply(option);
-            dropdown.button(Text.translatable(nameTranslationKey), component -> {
+            MutableText name = Text.translatable(nameFunction.apply(option));
+            dropdown.button(name, component -> {
                 component.remove();
-                UISounds.playButtonSound();
                 update.accept(option);
-                button.setMessage(Text.translatable(nameTranslationKey));
+                button.setMessage(name);
                 redrawImage(rootComponent);
                 button.active(true);
             });
+
+            // Dumb hack because we can't change the tooltip from the DropdownComponent builder
+            if (tooltipFunction != null) {
+                for (Component component : ((DropdownComponentAccessor) dropdown).getEntry().children()) {
+                    if (component instanceof LabelComponent label) {
+                        if (label.text() == name) {
+                            label.tooltip(Text.translatable(tooltipFunction.apply(option)));
+                        }
+                    }
+                }
+            }
         }
         container.child(dropdown);
     }
@@ -146,7 +178,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             BufferedImage image = RENDER_PIPELINE.process();
             if (image == null) return;
-            ImageIO.write(image, "png", output);
+            ImageIO.write(image, "png", output); // TODO maybe find a way to do this without having to do IO?
             ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
             MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(NativeImage.read(input)));
             input.close();

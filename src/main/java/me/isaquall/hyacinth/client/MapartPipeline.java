@@ -1,10 +1,12 @@
 package me.isaquall.hyacinth.client;
 
+import fi.dy.masa.litematica.util.FileType;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import me.isaquall.hyacinth.schematic.SchematicWriter;
+import me.isaquall.hyacinth.schematic.SupportMode;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +35,8 @@ public class MapartPipeline {
     private DitheringStrategy ditheringStrategy = DitheringStrategy.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/floyd_steinberg"));
     private int mapWidth = 1;
     private int mapHeight = 1;
+    private FileType exportType = FileType.LITEMATICA_SCHEMATIC;
+    private SupportMode supportMode = SupportMode.ONLY_REQUIRED;
 
     public MapartPipeline() {
         selectedBlocks = new HashMap<>();
@@ -55,7 +59,7 @@ public class MapartPipeline {
             }
             DitheringAlgorithm.DitheringResult ditheringResult = ditheringStrategy.ditheringAlgorithm().dither(image, selectedBlocks, true);
             image = ditheringResult.image();
-//            SchematicWriter.createSchematic(ditheringResult.pixels());
+            SchematicWriter.createSchematic(ditheringResult.pixels(), file.getName(), supportMode);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,6 +105,22 @@ public class MapartPipeline {
 
     public int mapHeight() {
         return mapHeight;
+    }
+
+    public FileType exportType() {
+        return exportType;
+    }
+
+    public void exportType(FileType exportType) {
+        this.exportType = exportType;
+    }
+
+    public SupportMode supportMode() {
+        return supportMode;
+    }
+
+    public void supportMode(SupportMode supportMode) {
+        this.supportMode = supportMode;
     }
 
     public List<Function<BufferedImage, BufferedImage>> tasks() {

@@ -18,6 +18,9 @@
     ],
     "main": [
       "me.isaquall.hyacinth.Hyacinth"
+    ],
+    "fabric-datagen": [
+      "me.isaquall.hyacinth.datagen.HyacinthDataGenerator"
     ]
   },
   "mixins": [

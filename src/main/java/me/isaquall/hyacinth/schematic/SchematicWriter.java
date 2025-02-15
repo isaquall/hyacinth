@@ -28,28 +28,35 @@ public class SchematicWriter {
         schematic.getMetadata().setAuthor(MinecraftClient.getInstance().player.getName().getString());
         schematic.getMetadata().setName(schematicName);
         schematic.getMetadata().setRegionCount(1);
-        Box box = new Box(new BlockPos(0, 0, 0), new BlockPos(pixels.length, pixels[0].length, 130), "map");
+
+        int length = pixels.length;
+        int width = pixels[0].length + 1; // Account for noobline
+
+        Box box = new Box(new BlockPos(0, 0, 0), new BlockPos(length, 130, width), "map");
         schematic.getMetadata().setTotalVolume(PositionUtils.getTotalVolume(List.of(box)));
         schematic.getMetadata().setEnclosingSize(PositionUtils.getEnclosingAreaSize(List.of(box)));
-        ((LitematicaSchematicMixin) schematic).getSubRegionSizes().put("map", new BlockPos(pixels.length, pixels[0].length, 130));
+        ((LitematicaSchematicMixin) schematic).getSubRegionSizes().put("map", new BlockPos(length, 130, width));
         ((LitematicaSchematicMixin) schematic).getSubRegionPositions().put("map", new BlockPos(0, 0, 0));
         ((LitematicaSchematicMixin) schematic).getTileEntities().put("map", new HashMap<>());
         schematic.getMetadata().setSchematicVersion(7);
         schematic.getMetadata().setMinecraftDataVersion(LitematicaSchematic.MINECRAFT_DATA_VERSION);
         schematic.getMetadata().setFileType(FileType.LITEMATICA_SCHEMATIC);
-        schematic.getMetadata().setTotalBlocks(pixels.length*pixels[0].length*2);
         SchematicHolder.getInstance().addSchematic(schematic, false);
         schematic.getMetadata().setTimeModifiedToNow();
 
         LitematicaBlockStateContainer container = new LitematicaBlockStateContainer(Math.abs(box.getSize().getX()), Math.abs(box.getSize().getY()), Math.abs(box.getSize().getZ()));
         ((LitematicaSchematicMixin) schematic).getBlockContainers().put("map", container);
 
+        int totalBlocks = 0;
+
         for (int x = 0; x < pixels.length; x++) {
             DitheringAlgorithm.Pixel[] slice = pixels[x];
             TerrainSlice terrainSlice = new TerrainSlice(slice);
             slices[x] = terrainSlice;
-            terrainSlice.writeTerrain(container, x, mode);
+            totalBlocks += terrainSlice.writeTerrain(container, x, mode);
         }
+
+        schematic.getMetadata().setTotalBlocks(totalBlocks);
 
         File schemDir = new File(MinecraftClient.getInstance().runDirectory + File.separator + "schematics" + File.separator);
         schematic.writeToFile(schemDir, schematicName, false);
@@ -60,18 +67,16 @@ public class SchematicWriter {
 
         private final ArrayList<PlannedBlock>[] blocks;
         private final DitheringAlgorithm.Pixel[] slice;
-        private final int length;
 
         public TerrainSlice(DitheringAlgorithm.Pixel[] slice) {
-            this.length = slice.length + 2;
-            this.blocks = new ArrayList[length];
+            this.blocks = new ArrayList[slice.length + 1]; // This accounts for the noobline
             this.slice = slice;
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < blocks.length; i++) {
                 blocks[i] = new ArrayList<>();
             }
         }
 
-        public void writeTerrain(LitematicaBlockStateContainer container, int x, SupportMode mode) {
+        public int writeTerrain(LitematicaBlockStateContainer container, int x, SupportMode mode) {
             int currentHeight = 0;
             for (int z = slice.length - 1; z >= 0; z--) { // TODO add support for larger maps
                 ArrayList<PlannedBlock> plannedBlocks = blocks[z + 1];
@@ -93,13 +98,13 @@ public class SchematicWriter {
                 }
             }
 
-            // add one at the end for proper shading
+            // add one at the beginning (slices are traversed backwards) for proper shading
             blocks[0].add(new PlannedBlock(Blocks.COBBLESTONE.getDefaultState(), currentHeight));
 
             // fix negative height
             int minHeight = 0;
-            for (int z = 0; z < length; z++) {
-                for (PlannedBlock block : blocks[z]) {
+            for (ArrayList<PlannedBlock> plannedBlocks : blocks) {
+                for (PlannedBlock block : plannedBlocks) {
                     if (block.height() < minHeight) {
                         minHeight = block.height();
                     }
@@ -107,18 +112,21 @@ public class SchematicWriter {
             }
 
             if (minHeight < 0) {
-                for (int z = 0; z < length; z++) {
-                    for (PlannedBlock block : blocks[z]) {
+                for (ArrayList<PlannedBlock> plannedBlocks : blocks) {
+                    for (PlannedBlock block : plannedBlocks) {
                         block.height(block.height() - minHeight);
                     }
                 }
             }
 
-            for (int z = 0; z < length; z++) {
+            int totalBlocks = 0;
+            for (int z = 0; z < blocks.length; z++) {
                 for (PlannedBlock block : blocks[z]) {
                     container.set(x, block.height(), z, block.blockState());
+                    totalBlocks++;
                 }
             }
+            return totalBlocks;
         }
     }
 

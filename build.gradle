@@ -19,10 +19,11 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    modImplementation "com.github.sakura-ryoko:litematica:${project.minecraft_version}-${project.litematica_version}"
+    modImplementation "com.github.sakura-ryoko:malilib:${project.minecraft_version}-${project.malilib_version}"
+
     include modImplementation("io.wispforest:owo-lib:${project.owo_version}")
     include modImplementation("io.github.cottonmc:Jankson-Fabric:${project.jankson_version}")
-    include modImplementation("com.github.sakura-ryoko:litematica:${project.minecraft_version}-${project.litematica_version}")
-    include modImplementation("com.github.sakura-ryoko:malilib:${project.minecraft_version}-${project.malilib_version}")
 }
 
 processResources {

@@ -111,7 +111,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
         resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, true);
             return true;
         });
         resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
@@ -119,7 +119,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_strategy");
         ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, true);
             return true;
         });
         ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringStrategy().translatableName()));
@@ -127,7 +127,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent exportTypeButton = rootComponent.childById(ButtonComponent.class, "export_type");
         exportTypeButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "export_type_container"), exportTypeButton, rootComponent, List.of(FileType.values()), FileType::name, null, RENDER_PIPELINE::exportType);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "export_type_container"), exportTypeButton, rootComponent, List.of(FileType.values()), FileType::name, null, RENDER_PIPELINE::exportType, false);
             return true;
         });
         exportTypeButton.setMessage(Text.literal(RENDER_PIPELINE.exportType().name()));
@@ -135,7 +135,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         ButtonComponent supportModeButton = rootComponent.childById(ButtonComponent.class, "support_mode");
         supportModeButton.mouseDown().subscribe((x, y, button) -> {
             UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "support_mode_container"), supportModeButton, rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode);
+            createOptionDropdown(rootComponent.childById(FlowLayout.class, "support_mode_container"), supportModeButton, rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, false);
             return true;
         });
         supportModeButton.setMessage(Text.translatable(RENDER_PIPELINE.supportMode().translatableName()));
@@ -143,7 +143,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
         redrawImage(rootComponent);
     }
 
-    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> update) {
+    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> updateFunction, boolean needsImageRedrawn) {
         if (!button.active()) return;
 
         button.active(false);
@@ -152,9 +152,9 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             MutableText name = Text.translatable(nameFunction.apply(option));
             dropdown.button(name, component -> {
                 component.remove();
-                update.accept(option);
+                updateFunction.accept(option);
                 button.setMessage(name);
-                redrawImage(rootComponent);
+                if (needsImageRedrawn) redrawImage(rootComponent);
                 button.active(true);
             });
 

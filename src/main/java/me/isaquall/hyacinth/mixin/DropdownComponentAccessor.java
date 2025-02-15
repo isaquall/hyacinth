@@ -5,7 +5,7 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(DropdownComponent.class)
+@Mixin(value = DropdownComponent.class, remap = false)
 public interface DropdownComponentAccessor {
 
     @Accessor("entries")

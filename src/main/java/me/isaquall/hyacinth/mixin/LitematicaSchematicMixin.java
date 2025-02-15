@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 import java.io.File;
 import java.util.Map;
 
-@Mixin(LitematicaSchematic.class)
+@Mixin(value = LitematicaSchematic.class, remap = false)
 public interface LitematicaSchematicMixin {
 
     @Invoker("<init>")

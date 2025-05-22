@@ -1,5 +1,6 @@
 {
   "values": [
+    "minecraft:snow",
     "minecraft:sand",
     "minecraft:red_sand",
     "minecraft:gravel",
@@ -18,6 +19,8 @@
     "minecraft:anvil",
     "minecraft:chipped_anvil",
     "minecraft:damaged_anvil",
+    "minecraft:light_weighted_pressure_plate",
+    "minecraft:heavy_weighted_pressure_plate",
     "minecraft:white_carpet",
     "minecraft:orange_carpet",
     "minecraft:magenta_carpet",

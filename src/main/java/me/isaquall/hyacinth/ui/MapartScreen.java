@@ -1,6 +1,5 @@
 package me.isaquall.hyacinth.ui;
 
-import fi.dy.masa.litematica.util.FileType;
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
 import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.Containers;
@@ -15,6 +14,7 @@ import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
+import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -108,68 +109,61 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             }
         });
 
-        ButtonComponent resizingStrategyButton = rootComponent.childById(ButtonComponent.class, "resizing_strategy");
-        resizingStrategyButton.mouseDown().subscribe((x, y, button) -> {
-            UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "resizing_strategy_container"), resizingStrategyButton, rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, true);
-            return true;
+        rootComponent.childById(SmallCheckboxComponent.class, "checkbox_better_color").onChanged().subscribe(checked -> {
+            RENDER_PIPELINE.betterColor(checked);
+            redrawImage(rootComponent);
         });
-        resizingStrategyButton.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
 
-        ButtonComponent ditheringMatrixButton = rootComponent.childById(ButtonComponent.class, "dithering_strategy");
-        ditheringMatrixButton.mouseDown().subscribe((x, y, button) -> {
-            UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "dithering_strategy_container"), ditheringMatrixButton, rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, true);
-            return true;
-        });
-        ditheringMatrixButton.setMessage(Text.translatable(RENDER_PIPELINE.ditheringStrategy().translatableName()));
+        FlowLayout renderSettings = rootComponent.childById(FlowLayout.class, "render-settings");
 
-        ButtonComponent exportTypeButton = rootComponent.childById(ButtonComponent.class, "export_type");
-        exportTypeButton.mouseDown().subscribe((x, y, button) -> {
-            UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "export_type_container"), exportTypeButton, rootComponent, List.of(FileType.values()), FileType::name, null, RENDER_PIPELINE::exportType, false);
-            return true;
-        });
-        exportTypeButton.setMessage(Text.literal(RENDER_PIPELINE.exportType().name()));
+        renderSettings.child(createDropdownButton("hyacinth.resizing_strategy", rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, true));
+        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, true));
 
-        ButtonComponent supportModeButton = rootComponent.childById(ButtonComponent.class, "support_mode");
-        supportModeButton.mouseDown().subscribe((x, y, button) -> {
-            UISounds.playButtonSound();
-            createOptionDropdown(rootComponent.childById(FlowLayout.class, "support_mode_container"), supportModeButton, rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, false);
-            return true;
-        });
-        supportModeButton.setMessage(Text.translatable(RENDER_PIPELINE.supportMode().translatableName()));
+        FlowLayout schematicSettings = rootComponent.childById(FlowLayout.class, "schematic-settings");
+        schematicSettings.child(createDropdownButton("hyacinth.support_mode", rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, false));
+        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", rootComponent, List.of(StaircaseMode.values()), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, false));
 
         redrawImage(rootComponent);
     }
 
-    private <T> void createOptionDropdown(FlowLayout container, ButtonComponent button, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> updateFunction, boolean needsImageRedrawn) {
-        if (!button.active()) return;
+    private <T> Component createDropdownButton(String labelName, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> updateFunction, boolean needsImageRedrawn) {
+        FlowLayout component = this.model.expandTemplate(
+                FlowLayout.class,
+                "dropdown-button@hyacinth:mapart_ui_model",
+                Map.of("label-translatable", labelName)
+        );
+        ButtonComponent button = component.childById(ButtonComponent.class, "button");
+        button.mouseDown().subscribe((x, y, i) -> {
+            if (!button.active()) return true;
 
-        button.active(false);
-        DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
-        for (T option : options) {
-            MutableText name = Text.translatable(nameFunction.apply(option));
-            dropdown.button(name, component -> {
-                component.remove();
-                updateFunction.accept(option);
-                button.setMessage(name);
-                if (needsImageRedrawn) redrawImage(rootComponent);
-                button.active(true);
-            });
+            button.active(false);
+            DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
+            for (T option : options) {
+                MutableText name = Text.translatable(nameFunction.apply(option));
+                dropdown.button(name, dropdownComponent -> {
+                    dropdownComponent.remove();
+                    updateFunction.accept(option);
+                    button.setMessage(name);
+                    if (needsImageRedrawn) redrawImage(rootComponent);
+                    button.active(true);
+                });
 
-            // Dumb hack because we can't change the tooltip from the DropdownComponent builder
-            if (tooltipFunction != null) {
-                for (Component component : ((DropdownComponentAccessor) dropdown).getEntry().children()) {
-                    if (component instanceof LabelComponent label) {
-                        if (label.text() == name) {
-                            label.tooltip(Text.translatable(tooltipFunction.apply(option)));
+                // Dumb hack because we can't change the tooltip from the DropdownComponent builder
+                if (tooltipFunction != null) {
+                    for (Component child : ((DropdownComponentAccessor) dropdown).getEntry().children()) {
+                        if (child instanceof LabelComponent label) {
+                            if (label.text() == name) {
+                                label.tooltip(Text.translatable(tooltipFunction.apply(option)));
+                            }
                         }
                     }
                 }
             }
-        }
-        container.child(dropdown);
+            component.childById(FlowLayout.class, "container").child(dropdown);
+            return true;
+        });
+        button.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
+        return component;
     }
 
     private void redrawImage(GridLayout rootComponent) {

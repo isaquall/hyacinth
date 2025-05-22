@@ -26,7 +26,7 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
     }
 
     @Override
-    public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing) {
+    public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor) {
         Sprite sprite = HyacinthClient.NOISE_MANAGER.getAtlas().getSprite(noiseTexture);
         NativeImage noise = ((SpriteContentsAccessor) sprite.getContents()).getImage();
         Int2ObjectArrayMap<BlockPalette> colors = generateColors(palettes);
@@ -50,7 +50,7 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
                 int original = ColorUtils.convertARGBtoRGB(in.getRGB(x, y));
                 int[] originalRGB = ColorUtils.getRGBTriple(original);
 
-                int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing);
+                int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing, betterColor);
                 int match = ColorUtils.scaleRGB(matchInfo[0], matchInfo[1]);
                 int[] matchRGB = ColorUtils.getRGBTriple(match);
                 mapMatrix[x][y] = new Pixel(matchInfo[0], matchInfo[1], palettes.get(colors.get(matchInfo[0])));

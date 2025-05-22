@@ -22,7 +22,7 @@ import java.util.List;
 
 public class SchematicWriter {
 
-    public static void createSchematic(DitheringAlgorithm.Pixel[][] pixels, String schematicName, SupportMode mode) {
+    public static void createSchematic(DitheringAlgorithm.Pixel[][] pixels, String schematicName, SupportMode supportMode, StaircaseMode staircaseMode) {
         TerrainSlice[] slices = new TerrainSlice[pixels.length];
         LitematicaSchematic schematic = LitematicaSchematicMixin.newLitematicaSchematic(null);
         schematic.getMetadata().setAuthor(MinecraftClient.getInstance().player.getName().getString());
@@ -53,7 +53,7 @@ public class SchematicWriter {
             DitheringAlgorithm.Pixel[] slice = pixels[x];
             TerrainSlice terrainSlice = new TerrainSlice(slice);
             slices[x] = terrainSlice;
-            totalBlocks += terrainSlice.writeTerrain(container, x, mode);
+            totalBlocks += terrainSlice.writeTerrain(container, x, supportMode, staircaseMode);
         }
 
         schematic.getMetadata().setTotalBlocks(totalBlocks);
@@ -76,25 +76,29 @@ public class SchematicWriter {
             }
         }
 
-        public int writeTerrain(LitematicaBlockStateContainer container, int x, SupportMode mode) {
+        public int writeTerrain(LitematicaBlockStateContainer container, int x, SupportMode supportMode, StaircaseMode staircaseMode) {
             int currentHeight = 0;
-            for (int z = slice.length - 1; z >= 0; z--) { // TODO add support for larger maps
+            for (int z = slice.length - 1; z >= 0; z--) {
                 ArrayList<PlannedBlock> plannedBlocks = blocks[z + 1];
                 DitheringAlgorithm.Pixel pixel = slice[z];
                 BlockState blockState = pixel.blockState();
                 int brightness = pixel.brightness();
                 PlannedBlock block = new PlannedBlock(blockState, currentHeight);
                 plannedBlocks.add(block);
-                switch (mode) {
+
+                switch (supportMode) {
                     case ALWAYS -> plannedBlocks.add(new PlannedBlock(Blocks.COBBLESTONE.getDefaultState(), currentHeight - 1));
                     case ONLY_REQUIRED -> {
                         if (TagUtil.isIn(HyacinthBlockTagProvider.REQUIRES_SUPPORT, blockState.getBlock())) plannedBlocks.add(new PlannedBlock(Blocks.COBBLESTONE.getDefaultState(), currentHeight - 1));
                     }
                 }
-                if (brightness == 180) {
-                    currentHeight++;
-                } else if (brightness == 255) {
-                    currentHeight--;
+
+                if (staircaseMode != StaircaseMode.FLAT) {
+                    if (brightness == 180) {
+                        currentHeight++;
+                    } else if (brightness == 255) {
+                        currentHeight--;
+                    }
                 }
             }
 
@@ -119,6 +123,8 @@ public class SchematicWriter {
                 }
             }
 
+            if (staircaseMode == StaircaseMode.VALLEY) groundTerrain(0, blocks.length);
+
             int totalBlocks = 0;
             for (int z = 0; z < blocks.length; z++) {
                 for (PlannedBlock block : blocks[z]) {
@@ -127,6 +133,99 @@ public class SchematicWriter {
                 }
             }
             return totalBlocks;
+        }
+
+        // startZ inclusive, endZ exclusive
+        private void groundTerrain(int startZ, int endZ) {
+            if (startZ >= endZ) {
+                return;
+            }
+
+            // find lowest block
+            int lowestHeightZ = -1;
+            int lowestHeight = Integer.MAX_VALUE;
+            for (int z = startZ; z < endZ; z++) {
+                int height = lowestHeightAt(z);
+                if (height < lowestHeight) {
+                    lowestHeight = height;
+                    lowestHeightZ = z;
+                }
+            }
+            // explore in both directions, but stay within [startZ, endZ[
+            int currentHeight = lowestHeight;
+
+            int includeLowZ = lowestHeightZ; // inclusive
+            int includeHighZ = lowestHeightZ + 1; // exclusive
+            // explore towards positive z (south)
+            for (int z = lowestHeightZ + 1; z < endZ; z++) {
+                PlannedBlock currentBlock = getHighestBlockAt(z);
+                // cut before blocks go down again
+                if (currentBlock.height() < currentHeight) {
+                    break;
+                }
+                // include this block
+                currentHeight = currentBlock.height();
+                includeHighZ = z + 1;
+            }
+            // explore towards negative z (north)
+            currentHeight = lowestHeight;
+            for (int z = lowestHeightZ - 1; z >= startZ; z--) {
+                PlannedBlock currentBlock = getHighestBlockAt(z);
+                PlannedBlock previousBlock = getHighestBlockAt(z + 1);
+                // cut before blocks go down again
+                if (currentBlock.height() < currentHeight) {
+                    break;
+                }
+                // include this block
+                currentHeight = currentBlock.height();
+                includeLowZ = z;
+            }
+
+            // move explored blocks down
+            changeHeight(includeLowZ, includeHighZ, -lowestHeight);
+
+            // recursively ground the of [startZ, endZ[
+            groundTerrain(startZ, includeLowZ);
+            groundTerrain(includeHighZ, endZ);
+        }
+
+        // startZ inclusive, endZ exclusive
+        private void changeHeight(int minZ, int maxZ, int heightOffset) {
+            for (int i = minZ; i < maxZ; i++) {
+                for (PlannedBlock block : blocks[i]) {
+                    block.height(block.height() + heightOffset);
+                }
+            }
+        }
+
+        private PlannedBlock getHighestBlockAt(int z) {
+            int height = highestHeightAt(z);
+            for (PlannedBlock block : blocks[z]) {
+                if (block.height() == height) {
+                    return block;
+                }
+            }
+            return null;
+        }
+
+        private int lowestHeightAt(int z) {
+            int lowestHeight = Integer.MAX_VALUE;
+            for (PlannedBlock block : blocks[z]) {
+                if (block.height() < lowestHeight) {
+                    lowestHeight = block.height();
+                }
+            }
+            return lowestHeight;
+        }
+
+        private int highestHeightAt(int z) { // TODO uhhhh is this necessary
+            int highestHeight = Integer.MIN_VALUE;
+            for (PlannedBlock block : blocks[z]) {
+                if (block.height() > highestHeight) {
+                    highestHeight = block.height();
+                }
+            }
+            return highestHeight;
         }
     }
 

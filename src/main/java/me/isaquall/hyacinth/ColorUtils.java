@@ -46,21 +46,31 @@ public class ColorUtils {
         return ColorUtils.getRGBInt(ColorHelper.getRed(argb), ColorHelper.getGreen(argb), ColorHelper.getBlue(argb));
     }
 
-    public static int[] findClosestColor(int rgb, IntSet colors, boolean staircasing) {
+    public static int[] findClosestColor(int rgb, IntSet colors, boolean staircasing, boolean useLAB) {
         double smallestDifference = Double.MAX_VALUE;
         int[] bestMatch = { 0, 0 };
         for (int color : colors) {
             if (staircasing) {
                 int[] variations = getVariations(color);
                 for (int variation = 0; variation < 3; variation++) {
-                    double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(variations[variation]));
+                    double difference;
+                    if (useLAB) {
+                        difference = colorDifference(RGB2LAB(rgb), RGB2LAB(variations[variation]));
+                    } else {
+                        difference = colorDifference(getRGBTriple(rgb), getRGBTriple(variations[variation]));
+                    }
                     if (difference < smallestDifference) {
                         bestMatch = new int[]{ color, BRIGHTNESS[variation].brightness };
                         smallestDifference = difference;
                     }
                 }
             } else {
-                double difference = colorDifference(RGB2LAB(rgb), RGB2LAB(color));
+                double difference;
+                if (useLAB) {
+                    difference = colorDifference(RGB2LAB(rgb), RGB2LAB(color));
+                } else {
+                    difference = colorDifference(getRGBTriple(rgb), getRGBTriple(color));
+                }
                 if (difference < smallestDifference) {
                     bestMatch = new int[]{ color, 255 };
                     smallestDifference = difference;

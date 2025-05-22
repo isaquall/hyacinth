@@ -2,10 +2,7 @@ package me.isaquall.hyacinth.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.block.AbstractPressurePlateBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.CarpetBlock;
-import net.minecraft.block.FallingBlock;
+import net.minecraft.block.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -24,7 +21,8 @@ public class HyacinthBlockTagProvider extends FabricTagProvider.BlockTagProvider
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        FabricTagProvider<Block>.FabricTagBuilder builder = getOrCreateTagBuilder(REQUIRES_SUPPORT);
+        FabricTagProvider<Block>.FabricTagBuilder builder = getOrCreateTagBuilder(REQUIRES_SUPPORT)
+                .add(Blocks.SNOW);
 
         for (Block block : Registries.BLOCK) {
             if (block instanceof FallingBlock fallingBlock) {

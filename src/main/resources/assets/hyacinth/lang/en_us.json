@@ -190,5 +190,23 @@
   ],
   "hyacinth.support_mode": [
     { "text": "Support Mode:", "color": "white" }
+  ],
+  "hyacinth.staircase_mode": [
+    { "text": "Staircase Mode:", "color": "white" }
+  ],
+  "hyacinth.staircase_mode.valley": [
+    { "text": "Valley (3D)", "color": "white" }
+  ],
+  "hyacinth.staircase_mode.classic": [
+    { "text": "Classic (3D)", "color": "white" }
+  ],
+  "hyacinth.staircase_mode.flat": [
+    { "text": "Flat (2D)", "color": "white" }
+  ],
+  "hyacinth.better_color": [
+    { "text": "Better Color:", "color": "white" }
+  ],
+  "hyacinth.better_color_tooltip": [
+    { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy.", "color": "white" }
   ]
 }

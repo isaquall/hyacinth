@@ -48,7 +48,7 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
         }
     }
 
-    public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing) {
+    public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor) {
         // Generate available colors
         Int2ObjectArrayMap<BlockPalette> colors = generateColors(palettes);
 
@@ -69,7 +69,7 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
             for (int x = 0; x < width; x++) {
                 int original = ColorUtils.convertARGBtoRGB(in.getRGB(x, y));
 
-                int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing);
+                int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing, betterColor);
                 int match = ColorUtils.scaleRGB(matchInfo[0], matchInfo[1]);
                 in.setRGB(x, y, ColorHelper.fullAlpha(match));
                 mapMatrix[x][y] = new Pixel(matchInfo[0], matchInfo[1], palettes.get(colors.get(matchInfo[0])));

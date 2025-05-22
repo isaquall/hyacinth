@@ -16,7 +16,7 @@ public interface DitheringAlgorithm {
             Identifier.of("hyacinth", "dithering_algorithm/matrix"), MatrixDitheringAlgorithm.class,
             Identifier.of("hyacinth", "dithering_algorithm/noise"), NoiseDitheringAlgorithm.class));
 
-    DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing);
+    DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor);
 
     record Pixel(int color, int brightness, BlockState blockState) {
 

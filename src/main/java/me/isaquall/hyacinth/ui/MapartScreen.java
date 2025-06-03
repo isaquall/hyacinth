@@ -8,7 +8,7 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
-import me.isaquall.hyacinth.ColorUtils;
+import me.isaquall.hyacinth.util.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
@@ -30,6 +30,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
@@ -38,15 +39,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings("UnstableApiUsage")
 @Environment(EnvType.CLIENT)
-public class MapartScreen extends BaseUIModelScreen<GridLayout> {
+public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standardize component id's with either - or _ :(
 
     private static final RenderEffectWrapper.RenderEffect HIGHLIGHT = new RenderEffectWrapper.RenderEffect() {
         @Override
@@ -85,8 +84,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
     @Override
     protected void build(GridLayout rootComponent) {
         buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"), rootComponent);
-        rootComponent.childById(ButtonComponent.class, "select_image_file").onPress(button -> openImageFileSelectionWindow(button, rootComponent));
-
         rootComponent.childById(TextBoxComponent.class, "map_width").text(String.valueOf(RENDER_PIPELINE.mapWidth())).onChanged().subscribe(width -> {
             if (width.isEmpty()) return;
             RENDER_PIPELINE.mapWidth(Integer.parseInt(width));
@@ -116,17 +113,31 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
 
         FlowLayout renderSettings = rootComponent.childById(FlowLayout.class, "render-settings");
 
-        renderSettings.child(createDropdownButton("hyacinth.resizing_strategy", rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values(), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, true));
-        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values(), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, true));
+        renderSettings.child(createDropdownButton("hyacinth.resizing_strategy", rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values().toArray(new ResizingStrategy[0]), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, RENDER_PIPELINE.resizingStrategy(), true));
+        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[0]), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, RENDER_PIPELINE.ditheringStrategy(), true));
 
         FlowLayout schematicSettings = rootComponent.childById(FlowLayout.class, "schematic-settings");
-        schematicSettings.child(createDropdownButton("hyacinth.support_mode", rootComponent, List.of(SupportMode.values()), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, false));
-        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", rootComponent, List.of(StaircaseMode.values()), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, false));
+        schematicSettings.child(createDropdownButton("hyacinth.support_mode", rootComponent, SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode(), false));
+        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", rootComponent, StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, RENDER_PIPELINE.staircaseMode(), true));
+
+        rootComponent.childById(ButtonComponent.class, "export-to-litematica").onPress(button -> RENDER_PIPELINE.exportToLitematica());
+
+        rootComponent.childById(TextureComponent.class, "download-button").mouseDown().subscribe((x, y, button) -> {
+            (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator)).mkdirs();
+            String file = TinyFileDialogs.tinyfd_saveFileDialog("Please select file save location.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator + "untitled.png", null, null); // TODO make title translatable
+            if (file == null) return true;
+            try {
+                ImageIO.write(RENDER_PIPELINE.getImage(), "png", new File(file));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return true;
+        });
 
         redrawImage(rootComponent);
     }
 
-    private <T> Component createDropdownButton(String labelName, GridLayout rootComponent, Collection<T> options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> updateFunction, boolean needsImageRedrawn) {
+    private <T> Component createDropdownButton(String labelName, GridLayout rootComponent, T[] options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> writeFunction, T current, boolean needsImageRedrawn) {
         FlowLayout component = this.model.expandTemplate(
                 FlowLayout.class,
                 "dropdown-button@hyacinth:mapart_ui_model",
@@ -142,7 +153,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                 MutableText name = Text.translatable(nameFunction.apply(option));
                 dropdown.button(name, dropdownComponent -> {
                     dropdownComponent.remove();
-                    updateFunction.accept(option);
+                    writeFunction.accept(option);
                     button.setMessage(name);
                     if (needsImageRedrawn) redrawImage(rootComponent);
                     button.active(true);
@@ -159,10 +170,11 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
                     }
                 }
             }
+            dropdown.zIndex(1);
             component.childById(FlowLayout.class, "container").child(dropdown);
             return true;
         });
-        button.setMessage(Text.translatable(RENDER_PIPELINE.resizingStrategy().translatableName()));
+        button.setMessage(Text.translatable(nameFunction.apply(current)));
         return component;
     }
 
@@ -180,22 +192,27 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             throw new RuntimeException(e);
         }
 
-        RenderEffectWrapper<TextureComponent> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(id, 0, 0, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128));
+        RenderEffectWrapper<Component> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(id, 0, 0, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128).id("map-preview"));
         mapPreviewEffectWrapper.id("map-preview-effect-wrapper");
         mapPreviewEffectWrapper.positioning(Positioning.relative(50, 50));
         FlowLayout previewContainer = rootComponent.childById(FlowLayout.class, "map-preview-container");
-        previewContainer.clearChildren();
+        RenderEffectWrapper<?> existingWrapper = previewContainer.childById(RenderEffectWrapper.class, "map-preview-effect-wrapper");
+        if (existingWrapper != null) existingWrapper.remove();
         previewContainer.child(mapPreviewEffectWrapper);
+
+        mapPreviewEffectWrapper.mouseDown().subscribe((x, y, button) -> {
+            openImageFileSelectionWindow(rootComponent);
+            return true;
+        });
 
         if (rootComponent.childById(SmallCheckboxComponent.class, "checkbox_show_grid").checked()) {
             mapPreviewEffectWrapper.effect(GRID);
         }
     }
 
-    private void openImageFileSelectionWindow(ButtonComponent button, GridLayout rootComponent) {
+    private void openImageFileSelectionWindow(GridLayout rootComponent) {
         UISounds.playButtonSound();
-        button.active(false);
-        (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator)).mkdirs();
+        (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator)).mkdirs();
         String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
         if (file != null) {
@@ -203,7 +220,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> {
             redrawImage(rootComponent);
             UISounds.playButtonSound();
         }
-        button.active(true);
     }
 
     private void buildBlockPalette(FlowLayout blockPalette, GridLayout rootComponent) {

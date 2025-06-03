@@ -4,10 +4,9 @@
   "package": "me.isaquall.hyacinth.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "DropdownComponentAccessor",
     "LitematicaSchematicMixin",
-    "MinecraftClientMixin",
-    "SpriteContentsAccessor",
-    "DropdownComponentAccessor"
+    "MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -208,5 +208,23 @@
   ],
   "hyacinth.better_color_tooltip": [
     { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy.", "color": "white" }
+  ],
+  "hyacinth.schematic_settings": [
+    { "text": "Schematic Settings", "color": "white", "bold": true }
+  ],
+  "hyacinth.render_settings": [
+    { "text": "Render Settings", "color": "white", "bold": true }
+  ],
+  "hyacinth.block_palettes": [
+    { "text": "Block Palettes", "color": "white", "bold": true }
+  ],
+  "hyacinth.export_to_litematica": [
+    { "text": "Export to Litematica", "color": "white" }
+  ],
+  "hyacinth.map_preview": [
+    { "text": "Map Preview", "color": "white", "bold": true }
+  ],
+  "hyacinth.download": [
+    { "text": "Download map preview", "color": "white" }
   ]
 }

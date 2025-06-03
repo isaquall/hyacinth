@@ -4,9 +4,13 @@ import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
+import me.isaquall.hyacinth.schematic.SchematicWriter;
 import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
+import me.isaquall.hyacinth.util.ImageUtil;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +25,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /*
-    Keeps track of all tasks to be applied to the image
+    Keeps track of all tasks to be applied to the image and stores the result
  */
 
 public class MapartPipeline {
@@ -29,7 +33,7 @@ public class MapartPipeline {
     private final HashMap<BlockPalette, BlockState> selectedBlocks;
     private final List<Function<BufferedImage, BufferedImage>> tasks;
 
-    private File file;
+    private File file = null;
     private ResizingStrategy resizingStrategy = ResizingStrategy.RESIZING_STRATEGIES.get(Identifier.of("hyacinth", "resizing_strategy/scale_smooth"));
     private DitheringStrategy ditheringStrategy = DitheringStrategy.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/floyd_steinberg"));
     private int mapWidth = 1;
@@ -37,6 +41,8 @@ public class MapartPipeline {
     private SupportMode supportMode = SupportMode.ONLY_REQUIRED;
     private StaircaseMode staircaseMode = StaircaseMode.CLASSIC;
     private boolean betterColor = true;
+    private DitheringAlgorithm.Pixel[][] pixels = null;
+    private BufferedImage image = null;
 
     public MapartPipeline() {
         selectedBlocks = new HashMap<>();
@@ -47,24 +53,33 @@ public class MapartPipeline {
     }
 
     public @Nullable BufferedImage process() {
-        if (file == null) return null;
-
         long time = System.currentTimeMillis();
         BufferedImage image;
         try {
-            ImageIO.setUseCache(false); // TODO profile this?
-            image = ImageIO.read(file);
+            if (file == null) {
+                NativeImage defaultImage = MinecraftClient.getInstance().getGuiAtlasManager().getSprite(Identifier.of("hyacinth", "select_image")).getContents().image;
+                image = ImageUtil.nativeToBufferedImage(defaultImage);
+            } else {
+                ImageIO.setUseCache(false); // TODO profile this?
+                image = ImageIO.read(file);
+            }
+
+            if (image == null) return null;
             for (Function<BufferedImage, BufferedImage> task : tasks) {
                 image = task.apply(image);
             }
             DitheringAlgorithm.DitheringResult ditheringResult = ditheringStrategy.ditheringAlgorithm().dither(image, selectedBlocks, (staircaseMode == StaircaseMode.VALLEY || staircaseMode == StaircaseMode.CLASSIC), betterColor);
-            image = ditheringResult.image();
-//            SchematicWriter.createSchematic(ditheringResult.pixels(), file.getName(), supportMode, staircaseMode);
+            this.image = ditheringResult.image();
+            pixels = ditheringResult.pixels();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         System.out.println("Process completed in " + (System.currentTimeMillis() - time) + "ms.");
         return image;
+    }
+
+    public void exportToLitematica() {
+        SchematicWriter.createSchematic(pixels, file.getName(), supportMode, staircaseMode);
     }
 
     public void resizingStrategy(ResizingStrategy resizingStrategy) {
@@ -133,5 +148,9 @@ public class MapartPipeline {
 
     public List<Function<BufferedImage, BufferedImage>> tasks() {
         return tasks;
+    }
+
+    public BufferedImage getImage() {
+        return this.image;
     }
 }

@@ -1,4 +1,4 @@
-package me.isaquall.hyacinth;
+package me.isaquall.hyacinth.util;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;

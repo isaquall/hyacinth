@@ -2,10 +2,9 @@ package me.isaquall.hyacinth.dithering.algorithm;
 
 import blue.endless.jankson.JsonObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import me.isaquall.hyacinth.ColorUtils;
+import me.isaquall.hyacinth.util.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.HyacinthClient;
-import me.isaquall.hyacinth.mixin.SpriteContentsAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;
@@ -28,7 +27,7 @@ public class NoiseDitheringAlgorithm implements DitheringAlgorithm {
     @Override
     public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor) {
         Sprite sprite = HyacinthClient.NOISE_MANAGER.getAtlas().getSprite(noiseTexture);
-        NativeImage noise = ((SpriteContentsAccessor) sprite.getContents()).getImage();
+        NativeImage noise = sprite.getContents().image;
         Int2ObjectArrayMap<BlockPalette> colors = generateColors(palettes);
 
         int width = in.getWidth();

@@ -8,7 +8,6 @@ import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.*;
 import io.wispforest.owo.ui.util.UISounds;
-import me.isaquall.hyacinth.util.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
@@ -16,6 +15,7 @@ import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
 import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
+import me.isaquall.hyacinth.util.ColorUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
@@ -241,7 +240,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
             for (BlockState blockState : palette.states()) {
                 RenderEffectWrapper<Component> blockStateRenderWrapper = Containers.renderEffect(createBlockStateComponent(blockState));
-                blockStateRenderWrapper.tooltip(Text.translatable(getTranslationKey(blockState)));
+                blockStateRenderWrapper.tooltip(Text.translatable(translationKey(blockState)));
 
                 if (RENDER_PIPELINE.selectedBlocks().get(palette) == blockState) {
                     blockStateRenderWrapper.effect(HIGHLIGHT);
@@ -275,7 +274,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         }
     }
 
-    private String getTranslationKey(BlockState blockState) {
+    private String translationKey(BlockState blockState) {
         if (blockState == Blocks.BARRIER.getDefaultState()) {
             return "hyacinth.disabled";
         } else {
@@ -283,7 +282,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         }
     }
 
-    public static MapartPipeline getRenderPipeline() {
+    public static MapartPipeline renderPipeline() {
         return RENDER_PIPELINE;
     }
 }

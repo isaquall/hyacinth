@@ -2,9 +2,9 @@ package me.isaquall.hyacinth.dithering.algorithm;
 
 import blue.endless.jankson.JsonObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import me.isaquall.hyacinth.util.ColorUtils;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.HyacinthClient;
+import me.isaquall.hyacinth.util.ColorUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.Sprite;

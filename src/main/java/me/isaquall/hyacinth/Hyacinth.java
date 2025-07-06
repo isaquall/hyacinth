@@ -10,6 +10,13 @@ import net.minecraft.resource.ResourceType;
 
 public class Hyacinth implements ModInitializer {
 
+//    public static final Jankson JANKSON = JanksonFactory.builder()
+//            .registerSerializer(LinkedHashSet.class, (set, m) -> m.serialize(set))
+//            .registerDeserializer(JsonElement.class, LinkedHashSet.class, element -> {
+//                LinkedHashSet<Object> set = new LinkedHashSet<>();
+//                JanksonOps.INSTANCE.getList(element).getOrThrow().accept(Collectors.toL);
+//            }).build();
+
     public static final Jankson JANKSON = JanksonFactory.createJankson();
 
     @Override

@@ -7,26 +7,16 @@
                     <children>
                         <flow-layout direction="vertical">
                             <children>
+                                <label>
+                                    <text translate="true">hyacinth.block_palettes</text>
+                                    <margins>
+                                        <bottom>5</bottom>
+                                    </margins>
+                                </label>
                                 <scroll direction="vertical">
                                     <flow-layout direction="vertical" id="block_palette">
-                                        <children>
-                                            <label>
-                                                <text translate="true">hyacinth.block_palettes</text>
-                                                <margins>
-                                                    <bottom>5</bottom>
-                                                </margins>
-                                            </label>
-                                        </children>
+                                        <children/>
                                     </flow-layout>
-
-                                    <sizing>
-                                        <horizontal method="fill">50</horizontal>
-                                        <vertical method="fill">60</vertical>
-                                    </sizing>
-
-                                    <padding>
-                                        <all>10</all>
-                                    </padding>
 
                                     <scrollbar>
                                         <vanilla/>
@@ -34,11 +24,24 @@
 
                                     <scrollbar-thiccness>5</scrollbar-thiccness>
 
-                                    <surface>
-                                        <panel-with-inset>2</panel-with-inset>
-                                    </surface>
+                                    <sizing>
+                                        <horizontal method="fill">100</horizontal>
+                                        <vertical method="fill">95</vertical>
+                                    </sizing>
                                 </scroll>
                             </children>
+
+                            <padding>
+                                <all>10</all>
+                            </padding>
+
+                            <surface>
+                                <panel-with-inset>2</panel-with-inset>
+                            </surface>
+                            <sizing>
+                                <horizontal method="fill">50</horizontal>
+                                <vertical method="fill">60</vertical>
+                            </sizing>
                         </flow-layout>
 
                         <flow-layout direction="vertical" id="render-settings">

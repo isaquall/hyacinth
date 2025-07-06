@@ -18,7 +18,7 @@ public interface DitheringAlgorithm {
 
     DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor);
 
-    record Pixel(int color, int brightness, BlockState blockState) {
+    record Pixel(int color, int brightness, BlockState blockState) { // TODO maybe use MapColor here?
 
     }
 

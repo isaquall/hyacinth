@@ -2,7 +2,6 @@ package me.isaquall.hyacinth.util;
 
 import net.minecraft.client.texture.NativeImage;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageUtil {

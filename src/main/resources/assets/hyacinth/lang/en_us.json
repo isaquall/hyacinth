@@ -161,6 +161,102 @@
   "hyacinth.gold": [
     { "text": "Gold", "color": "white" }
   ],
+  "hyacinth.lime": [
+    { "text": "Lime", "color": "white" }
+  ],
+  "hyacinth.diamond_blue": [
+    { "text": "Diamond Blue", "color": "white" }
+  ],
+  "hyacinth.lapis_blue": [
+    { "text": "Lapis Blue", "color": "white" }
+  ],
+  "hyacinth.emerald_green": [
+    { "text": "Emerald Green", "color": "white" }
+  ],
+  "hyacinth.spruce_brown": [
+    { "text": "Spruce Brown", "color": "white" }
+  ],
+  "hyacinth.dark_red": [
+    { "text": "Dark Red", "color": "white" }
+  ],
+  "hyacinth.terracotta_white": [
+    { "text": "Terracotta White", "color": "white" }
+  ],
+  "hyacinth.terracotta_orange": [
+    { "text": "Terracotta Orange", "color": "white" }
+  ],
+  "hyacinth.terracotta_magenta": [
+    { "text": "Terracotta Magenta", "color": "white" }
+  ],
+  "hyacinth.terracotta_light_blue": [
+    { "text": "Terracotta Light Blue", "color": "white" }
+  ],
+  "hyacinth.terracotta_yellow": [
+    { "text": "Terracotta Yellow", "color": "white" }
+  ],
+  "hyacinth.terracotta_lime": [
+    { "text": "Terracotta Lime", "color": "white" }
+  ],
+  "hyacinth.terracotta_pink": [
+    { "text": "Terracotta Pink", "color": "white" }
+  ],
+  "hyacinth.terracotta_gray": [
+    { "text": "Terracotta Gray", "color": "white" }
+  ],
+  "hyacinth.terracotta_light_gray": [
+    { "text": "Terracotta Light Gray", "color": "white" }
+  ],
+  "hyacinth.terracotta_cyan": [
+    { "text": "Terracotta Cyan", "color": "white" }
+  ],
+  "hyacinth.terracotta_purple": [
+    { "text": "Terracotta Purple", "color": "white" }
+  ],
+  "hyacinth.terracotta_blue": [
+    { "text": "Terracotta Blue", "color": "white" }
+  ],
+  "hyacinth.terracotta_brown": [
+    { "text": "Terracotta Brown", "color": "white" }
+  ],
+  "hyacinth.terracotta_green": [
+    { "text": "Terracotta Green", "color": "white" }
+  ],
+  "hyacinth.terracotta_red": [
+    { "text": "Terracotta Red", "color": "white" }
+  ],
+  "hyacinth.terracotta_black": [
+    { "text": "Terracotta Black", "color": "white" }
+  ],
+  "hyacinth.dull_red": [
+    { "text": "Dull Red", "color": "white" }
+  ],
+  "hyacinth.dull_pink": [
+    { "text": "Dull Pink", "color": "white" }
+  ],
+  "hyacinth.dark_crimson": [
+    { "text": "Dark Crimson", "color": "white" }
+  ],
+  "hyacinth.teal": [
+    { "text": "Teal", "color": "white" }
+  ],
+  "hyacinth.dark_aqua": [
+    { "text": "Dark Aqua", "color": "white" }
+  ],
+  "hyacinth.dark_dull_pink": [
+    { "text": "Dark Dull Pink", "color": "white" }
+  ],
+  "hyacinth.bright_teal": [
+    { "text": "Bright Teal", "color": "white" }
+  ],
+  "hyacinth.deepslate_gray": [
+    { "text": "Deepslate Gray", "color": "white" }
+  ],
+  "hyacinth.raw_iron_pink": [
+    { "text": "Raw Iron Pink", "color": "white" }
+  ],
+  "hyacinth.lichen_green": [
+    { "text": "Lichen Green", "color": "white" }
+  ],
   "hyacinth.blue_noise_grayscale_4": [
     { "text": "Blue Noise (Grayscale 4x4)", "color": "white" }
   ],
@@ -226,5 +322,16 @@
   ],
   "hyacinth.download": [
     { "text": "Download map preview", "color": "white" }
+  ],
+  "hyacinth.failed_to_add_block": [
+    { "text": "[Hyacinth] Failed to add block to a palette. Check your logs!", "color": "red" }
+  ],
+  "hyacinth.successfully_added_new_block": [
+    { "text": "[Hyacinth] Successfully added block to the palette.", "color": "green" }
+  ],
+  "hyacinth.block_already_exists_in_palette": [
+    { "text": "[Hyacinth] This block already exists in the ", "color": "red" },
+    { "index": 0 },
+    { "text": " palette!", "color": "red" }
   ]
 }

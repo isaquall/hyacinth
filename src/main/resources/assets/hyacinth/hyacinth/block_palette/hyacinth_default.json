@@ -122,25 +122,32 @@
     "translatableName": "hyacinth.dark_green",
     "blockstates": [
       {
-        "block": "minecraft:oak_leaves"
+        "block": "minecraft:oak_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:spruce_leaves"
+        "block": "minecraft:spruce_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:birch_leaves"
+        "block": "minecraft:birch_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:jungle_leaves"
+        "block": "minecraft:jungle_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:acacia_leaves"
+        "block": "minecraft:acacia_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:dark_oak_leaves"
+        "block": "minecraft:dark_oak_leaves",
+        "persistent": true
       },
       {
-        "block": "minecraft:azalea_leaves"
+        "block": "minecraft:azalea_leaves",
+        "persistent": true
       },
       {
         "block": "minecraft:bamboo_block",
@@ -470,7 +477,8 @@
         "block": "minecraft:pearlescent_froglight"
       },
       {
-        "block": "minecraft:cherry_leaves"
+        "block": "minecraft:cherry_leaves",
+        "persistent": true
       }
     ]
   },

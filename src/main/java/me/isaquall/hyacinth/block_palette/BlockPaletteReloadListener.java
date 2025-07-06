@@ -1,7 +1,6 @@
 package me.isaquall.hyacinth.block_palette;
 
 import blue.endless.jankson.Jankson;
-import blue.endless.jankson.api.DeserializationException;
 import blue.endless.jankson.api.SyntaxError;
 import io.github.cottonmc.jankson.JanksonOps;
 import me.isaquall.hyacinth.Hyacinth;
@@ -59,15 +58,11 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
     private static void process(InputStream stream) {
         try {
             OPS.getList(JANKSON.loadElement(stream)).getOrThrow().accept(element -> {
-                try {
-                    BlockPalette palette = JANKSON.fromJsonCarefully(JANKSON.load(element.toJson()), BlockPalette.class);
-                    if (!BlockPalette.BLOCK_PALETTES.keySet().contains(palette.color())) {
-                        BlockPalette.BLOCK_PALETTES.put(palette.color(), palette);
-                    } else {
-                        BlockPalette.BLOCK_PALETTES.get(palette.color()).states().addAll(palette.states());
-                    }
-                } catch (SyntaxError | DeserializationException e) {
-                    throw new RuntimeException(e);
+                BlockPalette palette = JANKSON.getMarshaller().marshall(BlockPalette.class, element);
+                if (!BlockPalette.BLOCK_PALETTES.keySet().contains(palette.color())) {
+                    BlockPalette.BLOCK_PALETTES.put(palette.color(), palette);
+                } else {
+                    BlockPalette.BLOCK_PALETTES.get(palette.color()).states().addAll(palette.states());
                 }
             });
         } catch (SyntaxError | IOException e) {

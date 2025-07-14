@@ -12,10 +12,10 @@ import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
-import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
 import me.isaquall.hyacinth.util.ColorUtils;
+import me.isaquall.hyacinth.util.ImageUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -23,7 +23,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.Items;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -34,8 +33,6 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -46,6 +43,8 @@ import java.util.function.Function;
 @Environment(EnvType.CLIENT)
 public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standardize component id's with either - or _ :(
 
+    private GridLayout rootComponent;
+    
     private static final RenderEffectWrapper.RenderEffect HIGHLIGHT = new RenderEffectWrapper.RenderEffect() {
         @Override
         public void setup(Component component, DrawContext context, float partialTicks, float delta) {
@@ -82,18 +81,9 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
     @Override
     protected void build(GridLayout rootComponent) {
-        buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"), rootComponent);
-        rootComponent.childById(TextBoxComponent.class, "map_width").text(String.valueOf(RENDER_PIPELINE.mapWidth())).onChanged().subscribe(width -> {
-            if (width.isEmpty()) return;
-            RENDER_PIPELINE.mapWidth(Integer.parseInt(width));
-            redrawImage(rootComponent);
-        });
-
-        rootComponent.childById(TextBoxComponent.class, "map_height").text(String.valueOf(RENDER_PIPELINE.mapHeight())).onChanged().subscribe(height -> {
-            if (height.isEmpty()) return;
-            RENDER_PIPELINE.mapHeight(Integer.parseInt(height));
-            redrawImage(rootComponent);
-        });
+        this.rootComponent = rootComponent;
+        
+        buildBlockPalette(rootComponent.childById(FlowLayout.class, "block_palette"));
 
         rootComponent.childById(SmallCheckboxComponent.class, "checkbox_show_grid").onChanged().subscribe(checked -> {
             RenderEffectWrapper<?> renderEffectWrapper = rootComponent.childById(RenderEffectWrapper.class, "map-preview-effect-wrapper");
@@ -107,36 +97,35 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
         rootComponent.childById(SmallCheckboxComponent.class, "checkbox_better_color").onChanged().subscribe(checked -> {
             RENDER_PIPELINE.betterColor(checked);
-            redrawImage(rootComponent);
+            redrawImage();
         });
 
         FlowLayout renderSettings = rootComponent.childById(FlowLayout.class, "render-settings");
 
-        renderSettings.child(createDropdownButton("hyacinth.resizing_strategy", rootComponent, ResizingStrategy.RESIZING_STRATEGIES.values().toArray(new ResizingStrategy[0]), ResizingStrategy::translatableName, null, RENDER_PIPELINE::resizingStrategy, RENDER_PIPELINE.resizingStrategy(), true));
-        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", rootComponent, DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[0]), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, RENDER_PIPELINE.ditheringStrategy(), true));
+        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[0]), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, RENDER_PIPELINE.ditheringStrategy(), true));
 
         FlowLayout schematicSettings = rootComponent.childById(FlowLayout.class, "schematic-settings");
-        schematicSettings.child(createDropdownButton("hyacinth.support_mode", rootComponent, SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode(), false));
-        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", rootComponent, StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, RENDER_PIPELINE.staircaseMode(), true));
+        schematicSettings.child(createDropdownButton("hyacinth.support_mode", SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode(), false));
+        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, RENDER_PIPELINE.staircaseMode(), true));
 
-        rootComponent.childById(ButtonComponent.class, "export-to-litematica").onPress(button -> RENDER_PIPELINE.exportToLitematica());
+//        rootComponent.childById(ButtonComponent.class, "export-to-litematica").onPress(button -> RENDER_PIPELINE.exportToLitematica());
 
         rootComponent.childById(TextureComponent.class, "download-button").mouseDown().subscribe((x, y, button) -> {
             (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator)).mkdirs();
             String file = TinyFileDialogs.tinyfd_saveFileDialog("Please select file save location.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator + "untitled.png", null, null); // TODO make title translatable
             if (file == null) return true;
             try {
-                ImageIO.write(RENDER_PIPELINE.getImage(), "png", new File(file));
+                ImageIO.write(RENDER_PIPELINE.finishedImage(), "png", new File(file));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             return true;
         });
 
-        redrawImage(rootComponent);
+        redrawImage();
     }
 
-    private <T> Component createDropdownButton(String labelName, GridLayout rootComponent, T[] options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> writeFunction, T current, boolean needsImageRedrawn) {
+    private <T> Component createDropdownButton(String labelName, T[] options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> writeFunction, T current, boolean needsImageRedrawn) {
         FlowLayout component = this.model.expandTemplate(
                 FlowLayout.class,
                 "dropdown-button@hyacinth:mapart_ui_model",
@@ -154,7 +143,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
                     dropdownComponent.remove();
                     writeFunction.accept(option);
                     button.setMessage(name);
-                    if (needsImageRedrawn) redrawImage(rootComponent);
+                    if (needsImageRedrawn) redrawImage();
                     button.active(true);
                 });
 
@@ -177,19 +166,15 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         return component;
     }
 
-    private void redrawImage(GridLayout rootComponent) {
+    public void redrawImage() {
         Identifier id = Identifier.of("hyacinth", "map_preview");
-
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            BufferedImage image = RENDER_PIPELINE.process();
-            if (image == null) return;
-            ImageIO.write(image, "png", output); // TODO maybe find a way to do this without having to do IO?
-            ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-            MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(NativeImage.read(input)));
-            input.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (RENDER_PIPELINE.baseImage() == null) {
+            NativeImage defaultImage = MinecraftClient.getInstance().getGuiAtlasManager().getSprite(Identifier.of("hyacinth", "select_image")).getContents().image;
+            RENDER_PIPELINE.baseImage(ImageUtils.nativeToBufferedImage(defaultImage));
         }
+        BufferedImage image = RENDER_PIPELINE.process();
+        if (image == null) return;
+        ImageUtils.bufferedToNativeImage(image, id);
 
         RenderEffectWrapper<Component> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(id, 0, 0, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128).id("map-preview"));
         mapPreviewEffectWrapper.id("map-preview-effect-wrapper");
@@ -200,7 +185,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         previewContainer.child(mapPreviewEffectWrapper);
 
         mapPreviewEffectWrapper.mouseDown().subscribe((x, y, button) -> {
-            openImageFileSelectionWindow(rootComponent);
+            openImageFileSelectionWindow();
             return true;
         });
 
@@ -209,19 +194,28 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         }
     }
 
-    private void openImageFileSelectionWindow(GridLayout rootComponent) {
+    private void openImageFileSelectionWindow() {
         UISounds.playButtonSound();
         (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator)).mkdirs();
-        String file = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
+        String path = TinyFileDialogs.tinyfd_openFileDialog("Please select a file to import.", MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth-input" + File.separator, null, null, false); // TODO make title translatable
 
-        if (file != null) {
-            RENDER_PIPELINE.openFile(new File(file));
-            redrawImage(rootComponent);
-            UISounds.playButtonSound();
+        if (path != null) {
+            File file = new File(path);
+            try {
+                BufferedImage image = ImageIO.read(file);
+                if (image.getWidth() % 128 != 0 || image.getHeight() % 128 != 0) {
+                    this.client.setScreen(new CropScreen(this, image));
+                } else {
+                    RENDER_PIPELINE.baseImage(image);
+                    redrawImage();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
-    private void buildBlockPalette(FlowLayout blockPalette, GridLayout rootComponent) {
+    private void buildBlockPalette(FlowLayout blockPalette) {
         for (BlockPalette palette : BlockPalette.BLOCK_PALETTES.values()) {
 
             FlowLayout color = Containers.horizontalFlow(Sizing.fill(95), Sizing.content(3));
@@ -257,7 +251,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
                     blockStateRenderWrapper.effect(HIGHLIGHT);
                     RENDER_PIPELINE.selectedBlocks().put(palette, blockState);
                     UISounds.playButtonSound();
-                    redrawImage(rootComponent);
+                    redrawImage();
                     return true;
                 });
             }

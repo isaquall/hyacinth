@@ -52,37 +52,6 @@
                                         <bottom>5</bottom>
                                     </margins>
                                 </label>
-                                <flow-layout direction="horizontal">
-                                    <children>
-                                        <label>
-                                            <text translate="true">hyacinth.map_size</text>
-                                            <margins>
-                                                <top>4</top>
-                                                <right>1</right>
-                                            </margins>
-                                        </label>
-                                        <text-box id="map_width">
-                                            <max-length>1</max-length>
-                                            <sizing>
-                                                <horizontal method="fixed">15</horizontal>
-                                                <vertical method="fixed">15</vertical>
-                                            </sizing>
-                                        </text-box>
-                                        <label>
-                                            <text>x</text>
-                                            <margins>
-                                                <top>4</top>
-                                            </margins>
-                                        </label>
-                                        <text-box id="map_height">
-                                            <max-length>1</max-length>
-                                            <sizing>
-                                                <horizontal method="fixed">15</horizontal>
-                                                <vertical method="fixed">15</vertical>
-                                            </sizing>
-                                        </text-box>
-                                    </children>
-                                </flow-layout>
 
                                 <flow-layout direction="horizontal">
                                     <children>

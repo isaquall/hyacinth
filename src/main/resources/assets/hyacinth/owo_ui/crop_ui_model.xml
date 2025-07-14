@@ -1,0 +1,122 @@
+<owo-ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/wisp-forest/owo-lib/1.20/owo-ui.xsd">
+    <components>
+        <flow-layout direction="vertical">
+            <children>
+                <flow-layout direction="vertical">
+                    <children>
+                        <grid-layout rows="1" columns="3" id="crop-container">
+                            <children>
+                                <flow-layout direction="vertical" row="0" column="0" id="map-preview-container">
+                                    <children>
+                                        <label>
+                                            <text translate="true">hyacinth.map_preview</text>
+                                            <margins>
+                                                <bottom>5</bottom>
+                                            </margins>
+                                        </label>
+                                    </children>
+                                </flow-layout>
+                                <grid-layout row="0" column="2" rows="2" columns="1">
+                                    <children>
+                                        <flow-layout direction="vertical" id="crop-settings" row="0" column="0">
+                                            <children>
+                                                <label>
+                                                    <text translate="true">hyacinth.crop_settings</text>
+                                                    <margins>
+                                                        <bottom>5</bottom>
+                                                    </margins>
+                                                </label>
+                                                <flow-layout direction="horizontal">
+                                                    <children>
+                                                        <label>
+                                                            <text translate="true">hyacinth.crop_size</text>
+                                                            <margins>
+                                                                <top>4</top>
+                                                                <right>1</right>
+                                                            </margins>
+                                                        </label>
+                                                    <text-box id="crop-width">
+                                                        <max-length>1</max-length>
+                                                        <sizing>
+                                                            <horizontal method="fixed">15</horizontal>
+                                                            <vertical method="fixed">15</vertical>
+                                                        </sizing>
+                                                    </text-box>
+                                                        <label>
+                                                            <text>x</text>
+                                                            <margins>
+                                                                <top>4</top>
+                                                            </margins>
+                                                        </label>
+                                                        <text-box id="crop-height">
+                                                            <max-length>1</max-length>
+                                                            <sizing>
+                                                                <horizontal method="fixed">15</horizontal>
+                                                                <vertical method="fixed">15</vertical>
+                                                            </sizing>
+                                                        </text-box>
+                                                    </children>
+                                                </flow-layout>
+                                            </children>
+                                        </flow-layout>
+                                        <flow-layout id="resize-original-image" direction="vertical" row="1" column="0">
+                                            <children>
+                                                <label>
+                                                    <text translate="true">hyacinth.resize_original_image</text>
+                                                </label>
+                                                <button id="continue-button">
+                                                    <text translate="true">hyacinth.continue</text>
+                                                </button>
+                                            </children>
+                                        </flow-layout>
+                                    </children>
+                                </grid-layout>
+                            </children>
+                            <sizing>
+                                <vertical method="content"/>
+                                <horizontal method="content"/>
+                            </sizing>
+                            <padding>
+                                <all>10</all>
+                            </padding>
+                        </grid-layout>
+                    </children>
+                    <surface>
+                        <panel-with-inset>2</panel-with-inset>
+                    </surface>
+                    <positioning type="relative">50,50</positioning>
+                </flow-layout>
+            </children>
+        </flow-layout>
+    </components>
+
+    <templates>
+        <template name="position">
+            <flow-layout direction="horizontal">
+                <children>
+                    <label>
+                        <text translate="true">{{axis}}</text>
+                        <margins>
+                            <top>4</top>
+                            <right>1</right>
+                        </margins>
+                    </label>
+                    <button id="decrement">
+                        <text>-</text>
+                    </button>
+                    <text-box id="position-display">
+                        <text>0</text>
+                        <sizing>
+                            <horizontal method="fixed">45</horizontal>
+                            <vertical method="fixed">20</vertical>
+                        </sizing>
+                    </text-box>
+                    <button id="increment">
+                        <text>+</text>
+                    </button>
+                </children>
+            </flow-layout>
+        </template>
+    </templates>
+</owo-ui>

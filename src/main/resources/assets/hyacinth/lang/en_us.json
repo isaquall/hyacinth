@@ -303,7 +303,7 @@
     { "text": "Better Color:", "color": "white" }
   ],
   "hyacinth.better_color_tooltip": [
-    { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy.", "color": "white" }
+    { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy, but will increase rendering times.", "color": "white" }
   ],
   "hyacinth.schematic_settings": [
     { "text": "Schematic Settings", "color": "white", "bold": true }
@@ -333,5 +333,29 @@
     { "text": "[Hyacinth] This block already exists in the ", "color": "red" },
     { "index": 0 },
     { "text": " palette!", "color": "red" }
+  ],
+  "hyacinth.crop_settings": [
+    { "text": "Crop Settings", "bold": true }
+  ],
+  "hyacinth.crop_x": [
+    { "text": "Crop X:", "color": "white" }
+  ],
+  "hyacinth.crop_y": [
+    { "text": "Crop Y:", "color": "white" }
+  ],
+  "hyacinth.continue": [
+    { "text": "Continue", "color": "white" }
+  ],
+  "hyacinth.crop_size": [
+    { "text": "Crop Size:", "color": "white" }
+  ],
+  "hyacinth.resize_original_image": [
+    { "text": "Resize Original Image", "color": "white", "bold": true }
+  ],
+  "hyacinth.image_width": [
+    { "text": "Image Width:", "color": "white" }
+  ],
+  "hyacinth.image_height": [
+    { "text": "Image Height:", "color": "white" }
   ]
 }

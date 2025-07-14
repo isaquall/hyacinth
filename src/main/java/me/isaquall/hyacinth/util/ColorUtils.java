@@ -8,7 +8,7 @@ import net.minecraft.util.math.ColorHelper;
 public class ColorUtils {
 
     public static final Int2IntOpenHashMap RGB_TO_LAB = new Int2IntOpenHashMap();
-    private static final MapColor.Brightness[] BRIGHTNESS = MapColor.Brightness.values();
+    public static final MapColor.Brightness[] BRIGHTNESS = MapColor.Brightness.values();
 
     static {
         RGB_TO_LAB.defaultReturnValue(-1);
@@ -80,12 +80,12 @@ public class ColorUtils {
         return bestMatch;
     }
 
-    private static double colorDifference(int[] rgb, int[] lab) {
+    public static double colorDifference(int[] rgb, int[] lab) {
         return (rgb[0] - lab[0]) * (rgb[0] - lab[0]) + (rgb[1] - lab[1]) * (rgb[1] - lab[1]) + (rgb[2] - lab[2]) * (rgb[2] - lab[2]);
     }
 
     // Copied from: https://github.com/redstonehelper/MapConverter/blob/main/MapConverter.java#L496
-    private static int[] RGB2LAB(int rgb) {
+    public static int[] RGB2LAB(int rgb) {
         int result = RGB_TO_LAB.get(rgb);
         if (result != -1) {
             return getRGBTriple(result);

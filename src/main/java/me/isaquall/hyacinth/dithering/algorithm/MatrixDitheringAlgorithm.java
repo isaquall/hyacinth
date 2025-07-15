@@ -5,7 +5,6 @@ import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.api.SyntaxError;
 import io.github.cottonmc.jankson.JanksonOps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import me.isaquall.hyacinth.Hyacinth;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.ui.HyacinthToast;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
+public class MatrixDitheringAlgorithm extends BaseDitheringAlgorithm {
 
     private static final JanksonOps OPS = JanksonOps.INSTANCE;
     private static final Jankson JANKSON = Hyacinth.JANKSON;
@@ -49,27 +48,18 @@ public class MatrixDitheringAlgorithm implements DitheringAlgorithm {
     }
 
     public DitheringResult dither(BufferedImage in, Map<BlockPalette, BlockState> palettes, boolean staircasing, boolean betterColor) {
-        // Generate available colors
-        Int2ObjectArrayMap<BlockPalette> colors = generateColors(palettes);
-
-        int width = in.getWidth();
-        int height = in.getHeight();
-        Pixel[][] mapMatrix = new Pixel[width][height];
-
-        if (colors.isEmpty()) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    in.setRGB(x, y, 0); // TODO background color here
-                }
-            }
-            return new DitheringResult(new Pixel[0][], in);
-        }
+        super.dither(in, palettes, staircasing, betterColor);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int original = ColorUtils.convertARGBtoRGB(in.getRGB(x, y));
 
-                int[] matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing, betterColor);
+                int[] matchInfo = colorMatchCache.get(original);
+                if (matchInfo[0] == -1) {
+                    matchInfo = ColorUtils.findClosestColor(original, colors.keySet(), staircasing, betterColor);
+                    colorMatchCache.put(original, matchInfo);
+                }
+
                 int match = ColorUtils.scaleRGB(matchInfo[0], matchInfo[1]);
                 in.setRGB(x, y, ColorHelper.fullAlpha(match));
                 mapMatrix[x][y] = new Pixel(matchInfo[0], matchInfo[1], palettes.get(colors.get(matchInfo[0])));

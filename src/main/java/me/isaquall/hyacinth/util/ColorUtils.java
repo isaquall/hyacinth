@@ -39,7 +39,7 @@ public class ColorUtils {
     }
 
     public static int getRGBInt(int r, int g, int b) {
-        return 256 * 256 * r + 256 * g + b;
+        return (r << 16) + (g << 8) + b;
     }
 
     public static int convertARGBtoRGB(int argb) {

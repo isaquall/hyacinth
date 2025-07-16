@@ -19,6 +19,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
@@ -36,8 +37,6 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
     private TextBoxComponent cropYDisplay;
     private int imageWidth;
     private int imageHeight;
-    private TextBoxComponent imageWidthDisplay;
-    private TextBoxComponent imageHeightDisplay;
 
     private final RenderEffectWrapper.RenderEffect CROP_OVERLAY = new RenderEffectWrapper.RenderEffect() {
         @Override
@@ -64,72 +63,85 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         this.imageHeight = originalImage.getHeight();
         this.resizedImage = originalImage;
 
-        GridLayout grid = rootComponent.childById(GridLayout.class, "crop-container");
-        grid.child(Components.spacer().sizing(Sizing.fixed(50), Sizing.fixed(1)), 0, 1);
-
         FlowLayout cropSettings = rootComponent.childById(FlowLayout.class, "crop-settings");
-        cropSettings.child(buildNumberDisplay("hyacinth.crop_x", textBoxComponent -> cropXDisplay = textBoxComponent, () -> cropX, x -> {
-            clampCropX(x);
-            cropXDisplay.setText(String.valueOf(cropX));
-        }));
-        cropSettings.child(buildNumberDisplay("hyacinth.crop_y", textBoxComponent -> cropYDisplay = textBoxComponent, () -> cropY, y -> {
-            clampCropY(y);
-            cropYDisplay.setText(String.valueOf(cropY));
-        }));
+        cropSettings.child(buildNumberDisplay("hyacinth.crop_x", textBoxComponent -> cropXDisplay = textBoxComponent, () -> cropX, this::clampCropX));
+        cropSettings.child(buildNumberDisplay("hyacinth.crop_y", textBoxComponent -> cropYDisplay = textBoxComponent, () -> cropY, this::clampCropY));
 
         rootComponent.childById(ButtonComponent.class, "continue-button").onPress(button -> this.close());
 
-        rootComponent.childById(TextBoxComponent.class, "crop-width").text(String.valueOf(cropHeight)).onChanged().subscribe(width -> {
+        rootComponent.childById(TextBoxComponent.class, "crop-width").text(String.valueOf(cropWidth)).onChanged().subscribe(width -> {
             if (width.isEmpty()) return;
-            this.cropHeight = Integer.parseInt(width);
+            int value;
+            try {
+               value = Integer.parseInt(width);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            if (value <= 0 || value * 128 > imageWidth) return;
+            this.cropWidth = value;
+            clampCropX(cropX);
         });
 
-        rootComponent.childById(TextBoxComponent.class, "crop-height").text(String.valueOf(cropWidth)).onChanged().subscribe(height -> {
+        rootComponent.childById(TextBoxComponent.class, "crop-height").text(String.valueOf(cropHeight)).onChanged().subscribe(height -> {
             if (height.isEmpty()) return;
-            this.cropWidth = Integer.parseInt(height);
+            int value;
+            try {
+                value = Integer.parseInt(height);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            if (value <= 0 || value * 128 > imageHeight) return;
+            this.cropHeight = value;
+            clampCropY(cropY);
         });
 
         FlowLayout resizeOriginalImageContainer = rootComponent.childById(FlowLayout.class, "resize-original-image");
 
-        resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_width", textBoxComponent -> imageWidthDisplay = textBoxComponent, () -> imageWidth, width -> {
+        resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_width", textBoxComponent -> {}, () -> imageWidth, width -> {
+            if (width <= 0) return 1;
             setImageSize(width, imageHeight);
-            imageWidthDisplay.setText(String.valueOf(imageWidth));
+            return width;
         }));
 
-        resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_height", textBoxComponent -> imageHeightDisplay = textBoxComponent, () -> imageHeight, height -> {
+        resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_height", textBoxComponent -> {}, () -> imageHeight, height -> {
+            if (height <= 0) return 1;
             setImageSize(imageWidth, height);
-            imageHeightDisplay.setText(String.valueOf(imageHeight));
+            return height;
         }));
 
         buildMapPreview(this.originalImage);
     }
 
-    private FlowLayout buildNumberDisplay(String translatableLabel, Consumer<TextBoxComponent> textBoxComponentConsumer, Supplier<Integer> get, Consumer<Integer> set) {
+    // Function<Integer, Integer> takes in the inputted value and returns the clamped value.
+    private FlowLayout buildNumberDisplay(String translatableLabel, Consumer<TextBoxComponent> textBoxComponentConsumer, Supplier<Integer> get, Function<Integer, Integer> set) {
         FlowLayout numberDisplayComponent = this.model.expandTemplate(FlowLayout.class,
                 "position@hyacinth:crop_ui_model",
-                Map.of("axis", translatableLabel));
+                Map.of("axis", translatableLabel,
+                        "value", String.valueOf(get.get())));
         TextBoxComponent textBox = numberDisplayComponent.childById(TextBoxComponent.class, "position-display");
-        textBox.setText(String.valueOf(get.get()));
         textBox.onChanged().subscribe(value -> {
             if (value.isEmpty()) return;
-            set.accept(Integer.valueOf(value));
+            int intValue = Integer.parseInt(value);
+            if (intValue < 0) return;
+            set.apply(intValue);
         });
         textBoxComponentConsumer.accept(textBox);
         textBox.mouseScroll().subscribe((mouseX, mouseY, amount) -> {
-            set.accept(get.get() + (int) amount);
+            textBox.setText(String.valueOf(set.apply(get.get() + (int) amount)));
             return true;
         });
-        numberDisplayComponent.childById(ButtonComponent.class, "decrement").onPress(button -> set.accept(get.get() - 1));
-        numberDisplayComponent.childById(ButtonComponent.class, "increment").onPress(button -> set.accept(get.get() + 1));
+        numberDisplayComponent.childById(ButtonComponent.class, "decrement").onPress(button -> textBox.setText(String.valueOf(set.apply(get.get() - 1))));
+        numberDisplayComponent.childById(ButtonComponent.class, "increment").onPress(button -> textBox.setText(String.valueOf(set.apply(get.get() + 1))));
         return numberDisplayComponent;
     }
 
     private void buildMapPreview(BufferedImage image) {
-        FlowLayout mapContainer = rootComponent.childById(FlowLayout.class, "map-preview-container").clearChildren();
+        FlowLayout mapContainer = rootComponent.childById(FlowLayout.class, "map-preview-container");
+        mapContainer.removeChild(mapContainer.childById(FocusableTextureComponent.class, "crop-preview"));
 
         Identifier id = Identifier.of("hyacinth", "crop_preview");
         ImageUtils.bufferedToNativeImage(image, id);
-        Component texture = new FocusableTextureComponent(id, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight()).id("crop-preview");
+        Component texture = new FocusableTextureComponent(id, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight()).id("crop-preview").zIndex(-1);
         RenderEffectWrapper<Component> cropRenderLayer = Containers.renderEffect(texture);
         cropRenderLayer.effect(CROP_OVERLAY);
         texture.mouseDrag().subscribe((mouseX, mouseY, deltaX, deltaY, button) -> {
@@ -146,12 +158,12 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         mapContainer.child(cropRenderLayer);
     }
 
-    private void clampCropX(int x) {
-        cropX = Math.clamp(x, 0, resizedImage.getWidth() - (128 * cropWidth));
+    private int clampCropX(int x) {
+        return cropX = Math.clamp(x, 0, resizedImage.getWidth() - (128 * cropWidth));
     }
 
-    private void clampCropY(int y) {
-        cropY = Math.clamp(y, 0, resizedImage.getHeight() - (128 * cropHeight));
+    private int clampCropY(int y) {
+        return cropY = Math.clamp(y, 0, resizedImage.getHeight() - (128 * cropHeight));
     }
 
     private void setImageSize(int width, int height) {

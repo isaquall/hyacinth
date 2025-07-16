@@ -85,7 +85,10 @@
                     <surface>
                         <panel-with-inset>2</panel-with-inset>
                     </surface>
-                    <positioning type="relative">50,50</positioning>
+                    <sizing>
+                        <horizontal method="fill">100</horizontal>
+                        <vertical method="fill">100</vertical>
+                    </sizing>
                 </flow-layout>
             </children>
         </flow-layout>
@@ -106,7 +109,7 @@
                         <text>-</text>
                     </button>
                     <text-box id="position-display">
-                        <text>0</text>
+                        <text>{{value}}</text>
                         <sizing>
                             <horizontal method="fixed">45</horizontal>
                             <vertical method="fixed">20</vertical>

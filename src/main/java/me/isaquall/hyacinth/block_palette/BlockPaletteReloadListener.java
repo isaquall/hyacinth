@@ -39,23 +39,22 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
         if (!folder.exists()) folder.mkdirs();
         for (File file : folder.listFiles((dir, name) -> name.endsWith(".json"))) {
             try(InputStream stream = Files.newInputStream(file.toPath())) {
-                process(stream);
+                process(file.toString(), stream);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                error(file.toString(), e);
             }
         }
     }
 
     private static void processResource(Resource resource) {
         try(InputStream stream = resource.getInputStream()) {
-            process(stream);
+            process(resource.getPackId(), stream);
         } catch (IOException e) {
-            error(resource.getPackId(), e.toString());
-            throw new RuntimeException("Hyacinth failed to read a block palette. " + e);
+            error(resource.getPackId(), e);
         }
     }
 
-    private static void process(InputStream stream) {
+    private static void process(String id, InputStream stream) {
         try {
             OPS.getList(JANKSON.loadElement(stream)).getOrThrow().accept(element -> {
                 BlockPalette palette = JANKSON.getMarshaller().marshall(BlockPalette.class, element);
@@ -66,7 +65,7 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
                 }
             });
         } catch (SyntaxError | IOException e) {
-            throw new RuntimeException("Hyacinth failed to read a block palette. " + e);
+            error(id, e);
         }
     }
 
@@ -75,10 +74,11 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
         return Identifier.of("hyacinth", "block_palette_reload_listener");
     }
 
-    public static void error(String id, String message) {
+    public static void error(String id, Exception e) {
         MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
                 Text.translatable("hyacinth.error"),
                 Text.translatable("hyacinth.failed_to_load_palette", id),
-                Text.of(message))));
+                Text.of(e.getMessage()))));
+        throw new RuntimeException("Hyacinth failed to read a block palette. " + e);
     }
 }

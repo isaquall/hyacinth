@@ -7,7 +7,7 @@ import blue.endless.jankson.api.SyntaxError;
 import io.github.cottonmc.jankson.JanksonOps;
 import me.isaquall.hyacinth.Hyacinth;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
-import me.isaquall.hyacinth.ui.HyacinthToast;
+import me.isaquall.hyacinth.ui.component.HyacinthToast;
 import me.isaquall.hyacinth.util.ColorUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -87,16 +87,17 @@ public class MatrixDitheringAlgorithm extends BaseDitheringAlgorithm {
             }
         }
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (colors.keySet().contains(mapMatrix[x][y].color())) {
-                    in.setRGB(x, y, ColorHelper.fullAlpha(ColorUtils.scaleRGB(mapMatrix[x][y].color(), mapMatrix[x][y].brightness())));
-                } else {
-                    System.out.println("Invalid color.");
-                    in.setRGB(x, y, Color.PINK.getRGB()); // TODO better error handling here
-                }
-            }
-        }
+//        ! This is just for debugging if the colors the algorithm produces are valid Minecraft colors !
+//        for (int y = 0; y < height; y++) {
+//            for (int x = 0; x < width; x++) {
+//                if (colors.keySet().contains(mapMatrix[x][y].color())) {
+//                    in.setRGB(x, y, ColorHelper.fullAlpha(ColorUtils.scaleRGB(mapMatrix[x][y].color(), mapMatrix[x][y].brightness())));
+//                } else {
+//                    System.out.println("Invalid color.");
+//                    in.setRGB(x, y, Color.PINK.getRGB());
+//                }
+//            }
+//        }
         return new DitheringResult(mapMatrix, in);
     }
 

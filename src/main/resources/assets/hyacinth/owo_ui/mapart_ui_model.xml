@@ -162,31 +162,4 @@
             </surface>
         </grid-layout>
     </components>
-    
-    <templates>
-        <template name="dropdown-button">
-            <flow-layout direction="horizontal">
-                <children>
-                    <label>
-                        <text translate="true">{{label-translatable}}</text>
-                        <margins>
-                            <top>4</top>
-                            <right>1</right>
-                        </margins>
-                    </label>
-                    <flow-layout direction="vertical" id="container">
-                        <children>
-                            <button id="button">
-                                <text>Pick</text>
-                            </button>
-                        </children>
-                        <sizing>
-                            <vertical method="content"/>
-                            <horizontal method="content"/>
-                        </sizing>
-                    </flow-layout>
-                </children>
-            </flow-layout>
-        </template>
-    </templates>
 </owo-ui>

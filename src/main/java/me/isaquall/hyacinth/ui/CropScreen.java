@@ -6,17 +6,19 @@ import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.TextBoxComponent;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
-import io.wispforest.owo.ui.container.GridLayout;
 import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
-import io.wispforest.owo.ui.core.Sizing;
+import me.isaquall.hyacinth.ui.component.ButtonDropdownComponent;
+import me.isaquall.hyacinth.ui.component.FocusableTextureComponent;
 import me.isaquall.hyacinth.util.ImageUtils;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.imgscalr.Scalr;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,18 +27,19 @@ import java.util.function.Supplier;
 @SuppressWarnings("UnstableApiUsage")
 public class CropScreen extends BaseUIModelScreen<FlowLayout> {
 
-    private FlowLayout rootComponent;
-    private final MapartScreen parent;
-    private final BufferedImage originalImage;
-    private BufferedImage resizedImage;
-    private int cropWidth = 1;
-    private int cropHeight = 1;
-    private int cropX = 0;
-    private int cropY = 0;
-    private TextBoxComponent cropXDisplay;
-    private TextBoxComponent cropYDisplay;
-    private int imageWidth;
-    private int imageHeight;
+    private static final Map<Scalr.Method, String> TRANSLATABLE_NAMES = new HashMap<>(Map.of(
+            Scalr.Method.QUALITY, "hyacinth.quality",
+            Scalr.Method.SPEED, "hyacinth.speed",
+            Scalr.Method.ULTRA_QUALITY, "hyacinth.ultra_quality",
+            Scalr.Method.AUTOMATIC, "hyacinth.automatic",
+            Scalr.Method.BALANCED, "hyacinth.balanced"));
+
+    private static final Map<Scalr.Method, String> TRANSLATABLE_TOOLTIPS = new HashMap<>(Map.of(
+            Scalr.Method.QUALITY, "hyacinth.quality_tooltip",
+            Scalr.Method.SPEED, "hyacinth.speed_tooltip",
+            Scalr.Method.ULTRA_QUALITY, "hyacinth.ultra_quality_tooltip",
+            Scalr.Method.AUTOMATIC, "hyacinth.automatic_tooltip",
+            Scalr.Method.BALANCED, "hyacinth.balanced_tooltip"));
 
     private final RenderEffectWrapper.RenderEffect CROP_OVERLAY = new RenderEffectWrapper.RenderEffect() {
         @Override
@@ -47,6 +50,20 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         @Override
         public void cleanup(Component component, DrawContext drawContext, float v, float v1) { }
     };
+
+    private Scalr.Method resizingMethod = Scalr.Method.QUALITY;
+    private FlowLayout rootComponent;
+    private final MapartScreen parent;
+    private final BufferedImage originalImage;
+    private BufferedImage resizedImage;
+    private int cropWidth = 1; // Measured in units of 128
+    private int cropHeight = 1;
+    private int cropX = 0; // Coordinates of the red crop area
+    private int cropY = 0;
+    private TextBoxComponent cropXDisplay;
+    private TextBoxComponent cropYDisplay;
+    private int imageWidth; // (Not measured in units of 128)
+    private int imageHeight;
 
     public CropScreen(MapartScreen parent, BufferedImage originalImage) {
         super(FlowLayout.class, DataSource.asset(Identifier.of("hyacinth", "crop_ui_model")));
@@ -67,16 +84,12 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         cropSettings.child(buildNumberDisplay("hyacinth.crop_x", textBoxComponent -> cropXDisplay = textBoxComponent, () -> cropX, this::clampCropX));
         cropSettings.child(buildNumberDisplay("hyacinth.crop_y", textBoxComponent -> cropYDisplay = textBoxComponent, () -> cropY, this::clampCropY));
 
-        rootComponent.childById(ButtonComponent.class, "continue-button").onPress(button -> this.close());
-
         rootComponent.childById(TextBoxComponent.class, "crop-width").text(String.valueOf(cropWidth)).onChanged().subscribe(width -> {
             if (width.isEmpty()) return;
             int value;
             try {
                value = Integer.parseInt(width);
-            } catch (NumberFormatException e) {
-                return;
-            }
+            } catch (NumberFormatException ignored) { return; }
             if (value <= 0 || value * 128 > imageWidth) return;
             this.cropWidth = value;
             clampCropX(cropX);
@@ -87,15 +100,18 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
             int value;
             try {
                 value = Integer.parseInt(height);
-            } catch (NumberFormatException e) {
-                return;
-            }
+            } catch (NumberFormatException ignored) { return; }
             if (value <= 0 || value * 128 > imageHeight) return;
             this.cropHeight = value;
             clampCropY(cropY);
         });
 
         FlowLayout resizeOriginalImageContainer = rootComponent.childById(FlowLayout.class, "resize-original-image");
+
+        resizeOriginalImageContainer.child(new ButtonDropdownComponent<>(resizeOriginalImageContainer, "hyacinth.resizing_method", TRANSLATABLE_NAMES.keySet().toArray(new Scalr.Method[0]), TRANSLATABLE_NAMES::get, TRANSLATABLE_TOOLTIPS::get, method -> {
+            this.resizingMethod = method;
+            setImageSize(imageWidth, imageHeight);
+        }, resizingMethod));
 
         resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_width", textBoxComponent -> {}, () -> imageWidth, width -> {
             if (width <= 0) return 1;
@@ -109,10 +125,12 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
             return height;
         }));
 
+        resizeOriginalImageContainer.child(Components.button(Text.translatable("hyacinth.continue"), button -> this.close()));
+
         buildMapPreview(this.originalImage);
     }
 
-    // Function<Integer, Integer> takes in the inputted value and returns the clamped value.
+    // `Function<Integer, Integer> set` takes in the inputted value and returns the clamped value.
     private FlowLayout buildNumberDisplay(String translatableLabel, Consumer<TextBoxComponent> textBoxComponentConsumer, Supplier<Integer> get, Function<Integer, Integer> set) {
         FlowLayout numberDisplayComponent = this.model.expandTemplate(FlowLayout.class,
                 "position@hyacinth:crop_ui_model",
@@ -121,7 +139,10 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         TextBoxComponent textBox = numberDisplayComponent.childById(TextBoxComponent.class, "position-display");
         textBox.onChanged().subscribe(value -> {
             if (value.isEmpty()) return;
-            int intValue = Integer.parseInt(value);
+            int intValue;
+            try {
+                intValue = Integer.parseInt(value);
+            } catch (NumberFormatException ignored) { return; }
             if (intValue < 0) return;
             set.apply(intValue);
         });
@@ -137,12 +158,13 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
 
     private void buildMapPreview(BufferedImage image) {
         FlowLayout mapContainer = rootComponent.childById(FlowLayout.class, "map-preview-container");
-        mapContainer.removeChild(mapContainer.childById(FocusableTextureComponent.class, "crop-preview"));
+        mapContainer.removeChild(mapContainer.childById(RenderEffectWrapper.class, "map-render-wrapper"));
 
         Identifier id = Identifier.of("hyacinth", "crop_preview");
         ImageUtils.bufferedToNativeImage(image, id);
-        Component texture = new FocusableTextureComponent(id, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight()).id("crop-preview").zIndex(-1);
+        Component texture = new FocusableTextureComponent(id, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight());
         RenderEffectWrapper<Component> cropRenderLayer = Containers.renderEffect(texture);
+        cropRenderLayer.id("map-render-wrapper");
         cropRenderLayer.effect(CROP_OVERLAY);
         texture.mouseDrag().subscribe((mouseX, mouseY, deltaX, deltaY, button) -> {
             if (mouseX >= cropX && mouseX <= (cropX + (128 * cropWidth)) && mouseY >= cropY && mouseY <= (cropY + (128 * cropHeight))) {
@@ -170,13 +192,17 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         this.imageWidth = width;
         this.imageHeight = height;
 
-        this.resizedImage = ImageUtils.cloneBufferedImage(originalImage.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH));
+        this.resizedImage = Scalr.resize(originalImage, resizingMethod, Scalr.Mode.FIT_EXACT, width, height);
+
         buildMapPreview(this.resizedImage);
     }
 
     @Override
     public void close() {
-        MapartScreen.renderPipeline().baseImage(this.resizedImage.getSubimage(cropX, cropY, cropWidth * 128, cropHeight * 128));
+        if (resizedImage == null) return;
+        MapartScreen.renderPipeline().baseImage(Scalr.crop(resizedImage, cropX, cropY, cropWidth * 128, cropHeight * 128));
+        resizedImage.flush();
+        originalImage.flush();
         this.client.setScreen(parent);
         MapartScreen.renderPipeline().mapHeight(cropHeight);
         MapartScreen.renderPipeline().mapWidth(cropWidth);

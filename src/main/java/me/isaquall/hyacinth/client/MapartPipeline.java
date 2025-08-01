@@ -43,6 +43,7 @@ public class MapartPipeline {
 
     public @Nullable BufferedImage process() {
         long time = System.currentTimeMillis();
+        if (finishedImage != null) finishedImage.flush();
         if (baseImage == null) return null;
         this.finishedImage = ImageUtils.cloneBufferedImage(baseImage);
         for (Function<BufferedImage, BufferedImage> task : tasks) {

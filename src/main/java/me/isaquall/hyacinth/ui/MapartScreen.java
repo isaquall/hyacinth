@@ -1,7 +1,9 @@
 package me.isaquall.hyacinth.ui;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
-import io.wispforest.owo.ui.component.*;
+import io.wispforest.owo.ui.component.Components;
+import io.wispforest.owo.ui.component.SmallCheckboxComponent;
+import io.wispforest.owo.ui.component.TextureComponent;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
@@ -11,9 +13,9 @@ import io.wispforest.owo.ui.util.UISounds;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.client.MapartPipeline;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
-import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
 import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
+import me.isaquall.hyacinth.ui.component.ButtonDropdownComponent;
 import me.isaquall.hyacinth.util.ColorUtils;
 import me.isaquall.hyacinth.util.ImageUtils;
 import net.fabricmc.api.EnvType;
@@ -24,20 +26,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.item.Items;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @SuppressWarnings("UnstableApiUsage")
 @Environment(EnvType.CLIENT)
@@ -102,11 +99,18 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
         FlowLayout renderSettings = rootComponent.childById(FlowLayout.class, "render-settings");
 
-        renderSettings.child(createDropdownButton("hyacinth.dithering_strategy", DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[0]), DitheringStrategy::translatableName, null, RENDER_PIPELINE::ditheringStrategy, RENDER_PIPELINE.ditheringStrategy(), true));
+        renderSettings.child(new ButtonDropdownComponent<>(renderSettings, "hyacinth.dithering_strategy", DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[]{}), DitheringStrategy::translatableName, null, strategy -> {
+            RENDER_PIPELINE.ditheringStrategy(strategy);
+            redrawImage();
+        }, RENDER_PIPELINE.ditheringStrategy()));
 
         FlowLayout schematicSettings = rootComponent.childById(FlowLayout.class, "schematic-settings");
-        schematicSettings.child(createDropdownButton("hyacinth.support_mode", SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode(), false));
-        schematicSettings.child(createDropdownButton("hyacinth.staircase_mode", StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, RENDER_PIPELINE::staircaseMode, RENDER_PIPELINE.staircaseMode(), true));
+
+        schematicSettings.child(new ButtonDropdownComponent<>(schematicSettings, "hyacinth.support_mode", SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode()));
+        schematicSettings.child(new ButtonDropdownComponent<>(schematicSettings, "hyacinth.staircase_mode", StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, mode -> {
+            RENDER_PIPELINE.staircaseMode(mode);
+            redrawImage();
+        }, RENDER_PIPELINE.staircaseMode()));
 
 //        rootComponent.childById(ButtonComponent.class, "export-to-litematica").onPress(button -> RENDER_PIPELINE.exportToLitematica());
 
@@ -123,47 +127,6 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         });
 
         redrawImage();
-    }
-
-    private <T> Component createDropdownButton(String labelName, T[] options, Function<T, String> nameFunction, @Nullable Function<T, String> tooltipFunction, Consumer<T> writeFunction, T current, boolean needsImageRedrawn) {
-        FlowLayout component = this.model.expandTemplate(
-                FlowLayout.class,
-                "dropdown-button@hyacinth:mapart_ui_model",
-                Map.of("label-translatable", labelName)
-        );
-        ButtonComponent button = component.childById(ButtonComponent.class, "button");
-        button.mouseDown().subscribe((x, y, i) -> {
-            if (!button.active()) return true;
-
-            button.active(false);
-            DropdownComponent dropdown = Components.dropdown(Sizing.content(5));
-            for (T option : options) {
-                MutableText name = Text.translatable(nameFunction.apply(option));
-                dropdown.button(name, dropdownComponent -> {
-                    dropdownComponent.remove();
-                    writeFunction.accept(option);
-                    button.setMessage(name);
-                    if (needsImageRedrawn) redrawImage();
-                    button.active(true);
-                });
-
-                // Dumb hack because we can't change the tooltip from the DropdownComponent builder
-                if (tooltipFunction != null) {
-                    for (Component child : ((DropdownComponentAccessor) dropdown).getEntry().children()) {
-                        if (child instanceof LabelComponent label) {
-                            if (label.text() == name) {
-                                label.tooltip(Text.translatable(tooltipFunction.apply(option)));
-                            }
-                        }
-                    }
-                }
-            }
-            dropdown.zIndex(1);
-            component.childById(FlowLayout.class, "container").child(dropdown);
-            return true;
-        });
-        button.setMessage(Text.translatable(nameFunction.apply(current)));
-        return component;
     }
 
     public void redrawImage() {

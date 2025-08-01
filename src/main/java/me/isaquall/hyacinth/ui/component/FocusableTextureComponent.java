@@ -1,4 +1,4 @@
-package me.isaquall.hyacinth.ui;
+package me.isaquall.hyacinth.ui.component;
 
 import io.wispforest.owo.ui.component.TextureComponent;
 import net.minecraft.util.Identifier;

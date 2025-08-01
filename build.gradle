@@ -10,6 +10,7 @@ repositories {
     maven { url "https://maven.wispforest.io/releases" }
     maven { url "https://server.bbkr.space/artifactory/libs-release" }
     maven { url "https://jitpack.io" }
+    mavenCentral()
 }
 
 dependencies {
@@ -24,6 +25,8 @@ dependencies {
 
     include modImplementation("io.wispforest:owo-lib:${project.owo_version}")
     include modImplementation("io.github.cottonmc:Jankson-Fabric:${project.jankson_version}")
+
+    include implementation("org.imgscalr:imgscalr-lib:${project.imgscalr_version}")
 }
 
 processResources {
@@ -39,7 +42,8 @@ processResources {
                 "owo_version": project.owo_version,
                 "jankson_version": project.jankson_version,
                 "litematica_version": project.litematica_version,
-                "malilib_version": project.malilib_version
+                "malilib_version": project.malilib_version,
+                "imgscalr_version": project.imgscalr_version
     }
 }
 

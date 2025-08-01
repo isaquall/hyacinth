@@ -41,15 +41,6 @@ public abstract class BaseDitheringAlgorithm implements DitheringAlgorithm {
         width = in.getWidth();
         height = in.getHeight();
         mapMatrix = new Pixel[width][height];
-
-        if (colors.isEmpty()) {
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    in.setRGB(x, y, 0); // TODO background color here
-                }
-            }
-            return new DitheringResult(new Pixel[0][], in);
-        }
         return null;
     }
 }

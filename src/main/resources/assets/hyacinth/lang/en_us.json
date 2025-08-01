@@ -1,319 +1,295 @@
 {
   "hyacinth.button_select_image_file":{
-    "text": "Select Image File",
-    "color": "white"
+    "text": "Select Image File"
   },
   "hyacinth.map_size": {
-    "text": "Map Size:",
-    "color": "white"
+    "text": "Map Size:"
   },
-  "hyacinth.resizing_method": {
-    "text": "Resizing Method:",
-    "color": "white"
+  "hyacinth.resizing_strategy": {
+    "text": "Resizing Strategy:"
   },
   "hyacinth.mapart_screen_keybind": {
-    "text": "Open Mapart Screen",
-    "color": "white"
+    "text": "Open Mapart Screen"
   },
   "hyacinth.dithering_strategy": {
-    "text": "Dithering Strategy:",
-    "color": "white"
+    "text": "Dithering Strategy:"
   },
   "hyacinth.pale_green": {
-    "text": "Pale Green",
-    "color": "white"
+    "text": "Pale Green"
   },
   "hyacinth.pale_yellow": {
-    "text": "Pale Yellow",
-    "color": "white"
+    "text": "Pale Yellow"
   },
   "hyacinth.white_gray": {
-    "text": "White Gray",
-    "color": "white"
+    "text": "White Gray"
   },
   "hyacinth.bright_red": {
-    "text": "Bright Red",
-    "color": "white"
+    "text": "Bright Red"
   },
   "hyacinth.pale_purple": {
-    "text": "Pale Purple",
-    "color": "white"
+    "text": "Pale Purple"
   },
   "hyacinth.iron_gray": {
-    "text": "Iron Gray",
-    "color": "white"
+    "text": "Iron Gray"
   },
   "hyacinth.dark_green": {
-    "text": "Dark Green",
-    "color": "white"
+    "text": "Dark Green"
   },
   "hyacinth.white": {
-    "text": "White",
-    "color": "white"
+    "text": "White"
   },
   "hyacinth.light_blue_gray": {
-    "text": "Light Blue Gray",
-    "color": "white"
+    "text": "Light Blue Gray"
   },
   "hyacinth.stone_gray": {
-    "text": "Stone Gray",
-    "color": "white"
+    "text": "Stone Gray"
   },
   "hyacinth.water_blue": {
-    "text": "Water Blue",
-    "color": "white"
+    "text": "Water Blue"
   },
   "hyacinth.oak_tan": {
-    "text": "Oak Tan",
-    "color": "white"
+    "text": "Oak Tan"
   },
   "hyacinth.off_white": {
-    "text": "Off White",
-    "color": "white"
+    "text": "Off White"
   },
   "hyacinth.dirt_brown": {
-    "text": "Dirt Brown",
-    "color": "white"
+    "text": "Dirt Brown"
   },
   "hyacinth.floyd_steinberg": {
-    "text": "Floyd-Steinberg",
-    "color": "white"
+    "text": "Floyd-Steinberg"
   },
   "hyacinth.atkinson": {
-    "text": "Atkinson",
-    "color": "white"
+    "text": "Atkinson"
   },
   "hyacinth.disabled": {
-    "text": "Disabled",
-    "color": "white"
+    "text": "Disabled"
   },
   "hyacinth.show_grid": {
-    "text": "Show Grid:",
-    "color": "white"
+    "text": "Show Grid:"
   },
   "hyacinth.none": {
-    "text": "None",
-    "color": "white"
+    "text": "None"
   },
   "hyacinth.error": {
     "text": "Hyacinth Error",
     "color": "red"
   },
   "hyacinth.failed_to_load_palette": [
-    { "text": "Failed to load block palette: ", "color": "white" },
+    { "text": "Failed to load block palette: " },
     { "index": 0, "color": "red" }
   ],
   "hyacinth.failed_to_create_matrix_dithering_algorithm": [
-    { "text": "Failed to create matrix dithering algorithm: ", "color": "white" },
+    { "text": "Failed to create matrix dithering algorithm: " },
     { "index": 0, "color": "red" }
   ],
   "hyacinth.failed_to_read_dithering_strategy": [
-    { "text": "Failed to read dithering strategy: ", "color": "white" },
+    { "text": "Failed to read dithering strategy: " },
     { "index": 0, "color": "red" }
   ],
   "hyacinth.orange": [
-    { "text": "Orange", "color": "white" }
+    { "text": "Orange" }
   ],
   "hyacinth.magenta": [
-    { "text": "Magenta", "color": "white" }
+    { "text": "Magenta" }
   ],
   "hyacinth.light_blue": [
-    { "text": "Light Blue", "color": "white" }
+    { "text": "Light Blue" }
   ],
   "hyacinth.yellow": [
-    { "text": "Yellow", "color": "white" }
+    { "text": "Yellow" }
   ],
   "hyacinth.pink": [
-    { "text": "Pink", "color": "white" }
+    { "text": "Pink" }
   ],
   "hyacinth.gray": [
-    { "text": "Gray", "color": "white" }
+    { "text": "Gray" }
   ],
   "hyacinth.light_gray": [
-    { "text": "Light Gray", "color": "white" }
+    { "text": "Light Gray" }
   ],
   "hyacinth.cyan": [
-    { "text": "Cyan", "color": "white" }
+    { "text": "Cyan" }
   ],
   "hyacinth.purple": [
-    { "text": "Purple", "color": "white" }
+    { "text": "Purple" }
   ],
   "hyacinth.blue": [
-    { "text": "Blue", "color": "white" }
+    { "text": "Blue" }
   ],
   "hyacinth.brown": [
-    { "text": "Brown", "color": "white" }
+    { "text": "Brown" }
   ],
   "hyacinth.red": [
-    { "text": "Red", "color": "white" }
+    { "text": "Red" }
   ],
   "hyacinth.black": [
-    { "text": "Black", "color": "white" }
+    { "text": "Black" }
   ],
   "hyacinth.gold": [
-    { "text": "Gold", "color": "white" }
+    { "text": "Gold" }
   ],
   "hyacinth.lime": [
-    { "text": "Lime", "color": "white" }
+    { "text": "Lime" }
   ],
   "hyacinth.diamond_blue": [
-    { "text": "Diamond Blue", "color": "white" }
+    { "text": "Diamond Blue" }
   ],
   "hyacinth.lapis_blue": [
-    { "text": "Lapis Blue", "color": "white" }
+    { "text": "Lapis Blue" }
   ],
   "hyacinth.emerald_green": [
-    { "text": "Emerald Green", "color": "white" }
+    { "text": "Emerald Green" }
   ],
   "hyacinth.spruce_brown": [
-    { "text": "Spruce Brown", "color": "white" }
+    { "text": "Spruce Brown" }
   ],
   "hyacinth.dark_red": [
-    { "text": "Dark Red", "color": "white" }
+    { "text": "Dark Red" }
   ],
   "hyacinth.terracotta_white": [
-    { "text": "Terracotta White", "color": "white" }
+    { "text": "Terracotta White" }
   ],
   "hyacinth.terracotta_orange": [
-    { "text": "Terracotta Orange", "color": "white" }
+    { "text": "Terracotta Orange" }
   ],
   "hyacinth.terracotta_magenta": [
-    { "text": "Terracotta Magenta", "color": "white" }
+    { "text": "Terracotta Magenta" }
   ],
   "hyacinth.terracotta_light_blue": [
-    { "text": "Terracotta Light Blue", "color": "white" }
+    { "text": "Terracotta Light Blue" }
   ],
   "hyacinth.terracotta_yellow": [
-    { "text": "Terracotta Yellow", "color": "white" }
+    { "text": "Terracotta Yellow" }
   ],
   "hyacinth.terracotta_lime": [
-    { "text": "Terracotta Lime", "color": "white" }
+    { "text": "Terracotta Lime" }
   ],
   "hyacinth.terracotta_pink": [
-    { "text": "Terracotta Pink", "color": "white" }
+    { "text": "Terracotta Pink" }
   ],
   "hyacinth.terracotta_gray": [
-    { "text": "Terracotta Gray", "color": "white" }
+    { "text": "Terracotta Gray" }
   ],
   "hyacinth.terracotta_light_gray": [
-    { "text": "Terracotta Light Gray", "color": "white" }
+    { "text": "Terracotta Light Gray" }
   ],
   "hyacinth.terracotta_cyan": [
-    { "text": "Terracotta Cyan", "color": "white" }
+    { "text": "Terracotta Cyan" }
   ],
   "hyacinth.terracotta_purple": [
-    { "text": "Terracotta Purple", "color": "white" }
+    { "text": "Terracotta Purple" }
   ],
   "hyacinth.terracotta_blue": [
-    { "text": "Terracotta Blue", "color": "white" }
+    { "text": "Terracotta Blue" }
   ],
   "hyacinth.terracotta_brown": [
-    { "text": "Terracotta Brown", "color": "white" }
+    { "text": "Terracotta Brown" }
   ],
   "hyacinth.terracotta_green": [
-    { "text": "Terracotta Green", "color": "white" }
+    { "text": "Terracotta Green" }
   ],
   "hyacinth.terracotta_red": [
-    { "text": "Terracotta Red", "color": "white" }
+    { "text": "Terracotta Red" }
   ],
   "hyacinth.terracotta_black": [
-    { "text": "Terracotta Black", "color": "white" }
+    { "text": "Terracotta Black" }
   ],
   "hyacinth.dull_red": [
-    { "text": "Dull Red", "color": "white" }
+    { "text": "Dull Red" }
   ],
   "hyacinth.dull_pink": [
-    { "text": "Dull Pink", "color": "white" }
+    { "text": "Dull Pink" }
   ],
   "hyacinth.dark_crimson": [
-    { "text": "Dark Crimson", "color": "white" }
+    { "text": "Dark Crimson" }
   ],
   "hyacinth.teal": [
-    { "text": "Teal", "color": "white" }
+    { "text": "Teal" }
   ],
   "hyacinth.dark_aqua": [
-    { "text": "Dark Aqua", "color": "white" }
+    { "text": "Dark Aqua" }
   ],
   "hyacinth.dark_dull_pink": [
-    { "text": "Dark Dull Pink", "color": "white" }
+    { "text": "Dark Dull Pink" }
   ],
   "hyacinth.bright_teal": [
-    { "text": "Bright Teal", "color": "white" }
+    { "text": "Bright Teal" }
   ],
   "hyacinth.deepslate_gray": [
-    { "text": "Deepslate Gray", "color": "white" }
+    { "text": "Deepslate Gray" }
   ],
   "hyacinth.raw_iron_pink": [
-    { "text": "Raw Iron Pink", "color": "white" }
+    { "text": "Raw Iron Pink" }
   ],
   "hyacinth.lichen_green": [
-    { "text": "Lichen Green", "color": "white" }
+    { "text": "Lichen Green" }
   ],
   "hyacinth.blue_noise_grayscale_4": [
-    { "text": "Blue Noise (Grayscale 4x4)", "color": "white" }
+    { "text": "Blue Noise (Grayscale 4x4)" }
   ],
   "hyacinth.blue_noise_rgb_4": [
-    { "text": "Blue Noise (RGB 4x4)", "color": "white" }
+    { "text": "Blue Noise (RGB 4x4)" }
   ],
   "hyacinth.export_type": [
-    { "text": "Export As:", "color": "white" }
+    { "text": "Export As:" }
   ],
   "hyacinth.support_mode.never": [
-    { "text": "Never", "color": "white" }
+    { "text": "Never" }
   ],
   "hyacinth.support_mode.only_required": [
-    { "text": "Only Required", "color": "white" }
+    { "text": "Only Required" }
   ],
   "hyacinth.support_mode.always": [
-    { "text": "Always", "color": "white" }
+    { "text": "Always" }
   ],
   "hyacinth.support_mode.never_tooltip": [
-    { "text": "This mode will never place support blocks.", "color": "white" }
+    { "text": "This mode will never place support blocks." }
   ],
   "hyacinth.support_mode.only_required_tooltip": [
-    { "text": "This mode will place support blocks only where required, i.e. blocks affected by gravity.", "color": "white" }
+    { "text": "This mode will place support blocks only where required, i.e. blocks affected by gravity." }
   ],
   "hyacinth.support_mode.always_tooltip": [
-    { "text": "This mode will place support blocks under every block.", "color": "white" }
+    { "text": "This mode will place support blocks under every block." }
   ],
   "hyacinth.support_mode": [
-    { "text": "Support Mode:", "color": "white" }
+    { "text": "Support Mode:" }
   ],
   "hyacinth.staircase_mode": [
-    { "text": "Staircase Mode:", "color": "white" }
+    { "text": "Staircase Mode:" }
   ],
   "hyacinth.staircase_mode.valley": [
-    { "text": "Valley (3D)", "color": "white" }
+    { "text": "Valley (3D)" }
   ],
   "hyacinth.staircase_mode.classic": [
-    { "text": "Classic (3D)", "color": "white" }
+    { "text": "Classic (3D)" }
   ],
   "hyacinth.staircase_mode.flat": [
-    { "text": "Flat (2D)", "color": "white" }
+    { "text": "Flat (2D)" }
   ],
   "hyacinth.better_color": [
-    { "text": "Better Color:", "color": "white" }
+    { "text": "Better Color:" }
   ],
   "hyacinth.better_color_tooltip": [
-    { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy, but will increase rendering times.", "color": "white" }
+    { "text": "When enabled, colors will be translated into LAB for quantizatation. This may improve color accuracy, but will increase rendering times." }
   ],
   "hyacinth.schematic_settings": [
-    { "text": "Schematic Settings", "color": "white", "bold": true }
+    { "text": "Schematic Settings", "bold": true }
   ],
   "hyacinth.render_settings": [
-    { "text": "Render Settings", "color": "white", "bold": true }
+    { "text": "Render Settings", "bold": true }
   ],
   "hyacinth.block_palettes": [
-    { "text": "Block Palettes", "color": "white", "bold": true }
+    { "text": "Block Palettes", "bold": true }
   ],
   "hyacinth.export_to_litematica": [
-    { "text": "Export to Litematica", "color": "white" }
+    { "text": "Export to Litematica" }
   ],
   "hyacinth.map_preview": [
-    { "text": "Map Preview", "color": "white", "bold": true }
+    { "text": "Map Preview", "bold": true }
   ],
   "hyacinth.download": [
-    { "text": "Download map preview", "color": "white" }
+    { "text": "Download map preview" }
   ],
   "hyacinth.failed_to_add_block": [
     { "text": "[Hyacinth] Failed to add block to a palette. Check your logs!", "color": "red" }
@@ -330,39 +306,39 @@
     { "text": "Crop Settings", "bold": true }
   ],
   "hyacinth.crop_x": [
-    { "text": "Crop X:", "color": "white" }
+    { "text": "Crop X:" }
   ],
   "hyacinth.crop_y": [
-    { "text": "Crop Y:", "color": "white" }
+    { "text": "Crop Y:" }
   ],
   "hyacinth.continue": [
-    { "text": "Continue", "color": "white" }
+    { "text": "Continue" }
   ],
   "hyacinth.crop_size": [
-    { "text": "Crop Size:", "color": "white" }
+    { "text": "Crop Size:" }
   ],
   "hyacinth.resize_original_image": [
-    { "text": "Resize Original Image", "color": "white", "bold": true }
+    { "text": "Resize Original Image", "bold": true }
   ],
   "hyacinth.image_width": [
-    { "text": "Image Width:", "color": "white" }
+    { "text": "Image Width:" }
   ],
   "hyacinth.image_height": [
-    { "text": "Image Height:", "color": "white" }
+    { "text": "Image Height:" }
   ],
   "hyacinth.quality": [
-    { "text": "Quality", "color": "white" }
+    { "text": "Quality" }
   ],
   "hyacinth.speed": [
-    { "text": "Speed", "color": "white" }
+    { "text": "Speed" }
   ],
   "hyacinth.ultra_quality": [
-    { "text": "Ultra Quality", "color": "white" }
+    { "text": "Ultra Quality" }
   ],
   "hyacinth.balanced": [
-    { "text": "Balanced", "color": "white" }
+    { "text": "Balanced" }
   ],
   "hyacinth.automatic": [
-    { "text": "Automatic", "color": "white" }
+    { "text": "Automatic" }
   ]
 }

@@ -1,6 +1,7 @@
 package me.isaquall.hyacinth.ui;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
+import io.wispforest.owo.ui.component.BoxComponent;
 import io.wispforest.owo.ui.component.ButtonComponent;
 import io.wispforest.owo.ui.component.Components;
 import io.wispforest.owo.ui.component.TextBoxComponent;
@@ -9,6 +10,10 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.RenderEffectWrapper;
 import io.wispforest.owo.ui.core.Color;
 import io.wispforest.owo.ui.core.Component;
+import io.wispforest.owo.ui.core.Insets;
+import io.wispforest.owo.ui.core.Sizing;
+import io.wispforest.owo.util.Observable;
+import me.isaquall.hyacinth.resizing_strategy.ResizingStrategy;
 import me.isaquall.hyacinth.ui.component.ButtonDropdownComponent;
 import me.isaquall.hyacinth.ui.component.FocusableTextureComponent;
 import me.isaquall.hyacinth.util.ImageUtils;
@@ -16,30 +21,18 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.imgscalr.Scalr;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class CropScreen extends BaseUIModelScreen<FlowLayout> {
-
-    private static final Map<Scalr.Method, String> TRANSLATABLE_NAMES = new HashMap<>(Map.of(
-            Scalr.Method.QUALITY, "hyacinth.quality",
-            Scalr.Method.SPEED, "hyacinth.speed",
-            Scalr.Method.ULTRA_QUALITY, "hyacinth.ultra_quality",
-            Scalr.Method.AUTOMATIC, "hyacinth.automatic",
-            Scalr.Method.BALANCED, "hyacinth.balanced"));
-
-    private static final Map<Scalr.Method, String> TRANSLATABLE_TOOLTIPS = new HashMap<>(Map.of(
-            Scalr.Method.QUALITY, "hyacinth.quality_tooltip",
-            Scalr.Method.SPEED, "hyacinth.speed_tooltip",
-            Scalr.Method.ULTRA_QUALITY, "hyacinth.ultra_quality_tooltip",
-            Scalr.Method.AUTOMATIC, "hyacinth.automatic_tooltip",
-            Scalr.Method.BALANCED, "hyacinth.balanced_tooltip"));
 
     private final RenderEffectWrapper.RenderEffect CROP_OVERLAY = new RenderEffectWrapper.RenderEffect() {
         @Override
@@ -51,12 +44,12 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         public void cleanup(Component component, DrawContext drawContext, float v, float v1) { }
     };
 
-    private Scalr.Method resizingMethod = Scalr.Method.QUALITY;
+    private ResizingStrategy resizingStrategy = ResizingStrategy.RESIZING_STRATEGIES.getFirst();
     private FlowLayout rootComponent;
     private final MapartScreen parent;
     private final BufferedImage originalImage;
     private BufferedImage resizedImage;
-    private int cropWidth = 1; // Measured in units of 128
+    private int cropWidth = 1; // Measured in units of 128 TODO switch these all to Observable<Integer> to hopefully reduce code complexity
     private int cropHeight = 1;
     private int cropX = 0; // Coordinates of the red crop area
     private int cropY = 0;
@@ -64,6 +57,7 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
     private TextBoxComponent cropYDisplay;
     private int imageWidth; // (Not measured in units of 128)
     private int imageHeight;
+    private Observable<Color> color = Observable.of(Color.BLUE);
 
     public CropScreen(MapartScreen parent, BufferedImage originalImage) {
         super(FlowLayout.class, DataSource.asset(Identifier.of("hyacinth", "crop_ui_model")));
@@ -108,24 +102,45 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
 
         FlowLayout resizeOriginalImageContainer = rootComponent.childById(FlowLayout.class, "resize-original-image");
 
-        resizeOriginalImageContainer.child(new ButtonDropdownComponent<>(resizeOriginalImageContainer, "hyacinth.resizing_method", TRANSLATABLE_NAMES.keySet().toArray(new Scalr.Method[0]), TRANSLATABLE_NAMES::get, TRANSLATABLE_TOOLTIPS::get, method -> {
-            this.resizingMethod = method;
+        resizeOriginalImageContainer.child(new ButtonDropdownComponent<>(resizeOriginalImageContainer, "hyacinth.resizing_strategy", ResizingStrategy.RESIZING_STRATEGIES.toArray(new ResizingStrategy[0]), ResizingStrategy::translatableName, ResizingStrategy::translatableTooltip, strategy -> {
+            this.resizingStrategy = strategy;
             setImageSize(imageWidth, imageHeight);
-        }, resizingMethod));
+        }, resizingStrategy));
 
         resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_width", textBoxComponent -> {}, () -> imageWidth, width -> {
-            if (width <= 0) return 1;
+            width = Math.max(width, 128);
             setImageSize(width, imageHeight);
             return width;
         }));
 
         resizeOriginalImageContainer.child(buildNumberDisplay("hyacinth.image_height", textBoxComponent -> {}, () -> imageHeight, height -> {
-            if (height <= 0) return 1;
+            height = Math.max(height, 128);
             setImageSize(imageWidth, height);
             return height;
         }));
 
         resizeOriginalImageContainer.child(Components.button(Text.translatable("hyacinth.continue"), button -> this.close()));
+
+        resizeOriginalImageContainer.child(
+                Containers.horizontalFlow(Sizing.content(), Sizing.content())
+                        .child(Components.label(Text.translatable("hyacinth.pad_color")).margins(Insets.top(4).withRight(1)))
+                        .child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(color.get()).fill(true).configure(component -> {
+                            if (!(component instanceof BoxComponent box)) return;
+                            box.mouseDown().subscribe((x, y, i) -> {
+                                try (MemoryStack stack = MemoryStack.stackPush()) {
+                                    String result = TinyFileDialogs.tinyfd_colorChooser("Color Picker", color.get().asHexString(false), null, stack.malloc(3));
+                                    if (result == null) return true;
+                                    color.set(Color.ofRgb(Integer.parseUnsignedInt(result.substring(1), 16)));
+                                    box.color(color.get());
+                                }
+
+                                return true;
+                            });
+                        })));
+
+        color.observe(color -> {
+            if (Objects.equals(resizingStrategy.translatableName(), "hyacinth.pad")) setImageSize(imageWidth, imageHeight);
+        });
 
         buildMapPreview(this.originalImage);
     }
@@ -181,18 +196,23 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
     }
 
     private int clampCropX(int x) {
-        return cropX = Math.clamp(x, 0, resizedImage.getWidth() - (128 * cropWidth));
+        return cropX = Math.clamp(x, 0, Math.max(imageWidth - (128 * cropWidth), 0));
     }
 
     private int clampCropY(int y) {
-        return cropY = Math.clamp(y, 0, resizedImage.getHeight() - (128 * cropHeight));
+        return cropY = Math.clamp(y, 0, Math.max(imageHeight - (128 * cropHeight), 0));
     }
 
     private void setImageSize(int width, int height) {
         this.imageWidth = width;
         this.imageHeight = height;
 
-        this.resizedImage = Scalr.resize(originalImage, resizingMethod, Scalr.Mode.FIT_EXACT, width, height);
+        this.resizedImage = resizingStrategy.resize(originalImage, imageWidth, imageHeight, new java.awt.Color(color.get().red(), color.get().green(), color.get().blue(), color.get().alpha()));
+
+        clampCropY(cropY);
+        clampCropX(cropX);
+        cropXDisplay.setText(String.valueOf(cropX));
+        cropYDisplay.setText(String.valueOf(cropY));
 
         buildMapPreview(this.resizedImage);
     }

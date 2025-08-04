@@ -31,5 +31,8 @@
     "fabric": "*",
     "minecraft": "${minecraft_version}",
     "owo-lib": "${owo_version}"
+  },
+  "suggests": {
+    "litematica": "*"
   }
 }

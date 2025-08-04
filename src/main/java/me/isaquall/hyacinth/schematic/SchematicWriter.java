@@ -1,82 +1,64 @@
 package me.isaquall.hyacinth.schematic;
 
-import fi.dy.masa.litematica.data.SchematicHolder;
-import fi.dy.masa.litematica.schematic.LitematicaSchematic;
-import fi.dy.masa.litematica.schematic.container.LitematicaBlockStateContainer;
-import fi.dy.masa.litematica.selection.Box;
-import fi.dy.masa.litematica.util.FileType;
-import fi.dy.masa.litematica.util.PositionUtils;
+import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.datagen.HyacinthBlockTagProvider;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
-import me.isaquall.hyacinth.mixin.LitematicaSchematicMixin;
+import me.isaquall.hyacinth.schematic.litematica.LitematicaSchematicWriter;
 import net.fabricmc.fabric.api.tag.convention.v2.TagUtil;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class SchematicWriter {
 
-    public static void createSchematic(DitheringAlgorithm.Pixel[][] pixels, String schematicName, SupportMode supportMode, StaircaseMode staircaseMode) {
+    public static void createSchematic(HashMap<BlockPalette, BlockState> selectedBlocks, DitheringAlgorithm.Pixel[][] pixels, SupportMode supportMode, StaircaseMode staircaseMode) {
         TerrainSlice[] slices = new TerrainSlice[pixels.length];
-        LitematicaSchematic schematic = LitematicaSchematicMixin.newLitematicaSchematic(null);
-        schematic.getMetadata().setAuthor(MinecraftClient.getInstance().player.getName().getString());
-        schematic.getMetadata().setName(schematicName);
-        schematic.getMetadata().setRegionCount(1);
-
-        int length = pixels.length;
-        int width = pixels[0].length + 1; // Account for noobline
-
-        Box box = new Box(new BlockPos(0, 0, 0), new BlockPos(length, 130, width), "map");
-        schematic.getMetadata().setTotalVolume(PositionUtils.getTotalVolume(List.of(box)));
-        schematic.getMetadata().setEnclosingSize(PositionUtils.getEnclosingAreaSize(List.of(box)));
-        ((LitematicaSchematicMixin) schematic).getSubRegionSizes().put("map", new BlockPos(length, 130, width));
-        ((LitematicaSchematicMixin) schematic).getSubRegionPositions().put("map", new BlockPos(0, 0, 0));
-        ((LitematicaSchematicMixin) schematic).getTileEntities().put("map", new HashMap<>());
-        schematic.getMetadata().setSchematicVersion(7);
-        schematic.getMetadata().setMinecraftDataVersion(LitematicaSchematic.MINECRAFT_DATA_VERSION);
-        schematic.getMetadata().setFileType(FileType.LITEMATICA_SCHEMATIC);
-        SchematicHolder.getInstance().addSchematic(schematic, false);
-        schematic.getMetadata().setTimeModifiedToNow();
-
-        LitematicaBlockStateContainer container = new LitematicaBlockStateContainer(Math.abs(box.getSize().getX()), Math.abs(box.getSize().getY()), Math.abs(box.getSize().getZ()));
-        ((LitematicaSchematicMixin) schematic).getBlockContainers().put("map", container);
-
-        int totalBlocks = 0;
 
         for (int x = 0; x < pixels.length; x++) {
             DitheringAlgorithm.Pixel[] slice = pixels[x];
-            TerrainSlice terrainSlice = new TerrainSlice(slice);
+            TerrainSlice terrainSlice = new TerrainSlice(x, slice);
             slices[x] = terrainSlice;
-            totalBlocks += terrainSlice.writeTerrain(container, x, supportMode, staircaseMode);
+            terrainSlice.writeTerrain(supportMode, staircaseMode);
         }
 
-        schematic.getMetadata().setTotalBlocks(totalBlocks);
+        File dir = new File(FabricLoader.getInstance().getGameDir().resolve("schematics").toString());
+        dir.mkdirs();
+        File schematicFile = new File(dir, "hyacinth-output.litematic");
 
-        File schemDir = new File(MinecraftClient.getInstance().runDirectory + File.separator + "schematics" + File.separator);
-        schematic.writeToFile(schemDir, schematicName, false);
-        SchematicHolder.getInstance().getOrLoad(new File(schemDir + schematicName));
+        try (FileOutputStream os = new FileOutputStream(schematicFile)) {
+            NbtCompound schematic = LitematicaSchematicWriter.createSchematic(slices, selectedBlocks);
+            NbtIo.writeCompressed(schematic, os);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static class TerrainSlice {
+    public static class TerrainSlice {
 
-        private final ArrayList<PlannedBlock>[] blocks;
+        public final ArrayList<PlannedBlock>[] blocks;
         private final DitheringAlgorithm.Pixel[] slice;
+        public final int length;
+        public final int x;
 
-        public TerrainSlice(DitheringAlgorithm.Pixel[] slice) {
-            this.blocks = new ArrayList[slice.length + 1]; // This accounts for the noobline
+        public TerrainSlice(int x, DitheringAlgorithm.Pixel[] slice) {
+            this.blocks = new ArrayList[slice.length + 1];
+            this.x = x;
             this.slice = slice;
             for (int i = 0; i < blocks.length; i++) {
                 blocks[i] = new ArrayList<>();
             }
+            this.length = slice.length;
         }
 
-        public int writeTerrain(LitematicaBlockStateContainer container, int x, SupportMode supportMode, StaircaseMode staircaseMode) {
+        public void writeTerrain(SupportMode supportMode, StaircaseMode staircaseMode) {
             int currentHeight = 0;
             for (int z = slice.length - 1; z >= 0; z--) {
                 ArrayList<PlannedBlock> plannedBlocks = blocks[z + 1];
@@ -106,7 +88,8 @@ public class SchematicWriter {
             blocks[0].add(new PlannedBlock(Blocks.COBBLESTONE.getDefaultState(), currentHeight));
 
             // fix negative height
-            int minHeight = 0;
+            int minHeight = -1;
+            if (supportMode == SupportMode.NEVER) minHeight = 0;
             for (ArrayList<PlannedBlock> plannedBlocks : blocks) {
                 for (PlannedBlock block : plannedBlocks) {
                     if (block.height() < minHeight) {
@@ -124,15 +107,6 @@ public class SchematicWriter {
             }
 
             if (staircaseMode == StaircaseMode.VALLEY) groundTerrain(0, blocks.length);
-
-            int totalBlocks = 0;
-            for (int z = 0; z < blocks.length; z++) {
-                for (PlannedBlock block : blocks[z]) {
-                    container.set(x, block.height(), z, block.blockState());
-                    totalBlocks++;
-                }
-            }
-            return totalBlocks;
         }
 
         // startZ inclusive, endZ exclusive
@@ -218,7 +192,7 @@ public class SchematicWriter {
             return lowestHeight;
         }
 
-        private int highestHeightAt(int z) { // TODO uhhhh is this necessary
+        private int highestHeightAt(int z) {
             int highestHeight = Integer.MIN_VALUE;
             for (PlannedBlock block : blocks[z]) {
                 if (block.height() > highestHeight) {
@@ -227,9 +201,21 @@ public class SchematicWriter {
             }
             return highestHeight;
         }
+
+        public int highestHeight() {
+            int highestHeight = Integer.MIN_VALUE;
+            for (ArrayList<PlannedBlock> list : blocks) {
+                for (PlannedBlock block : list) {
+                    if (block.height() > highestHeight) {
+                        highestHeight = block.height();
+                    }
+                }
+            }
+            return highestHeight;
+        }
     }
 
-    private static class PlannedBlock {
+    public static class PlannedBlock {
         private BlockState blockState;
         private int height;
 

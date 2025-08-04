@@ -135,14 +135,6 @@
                                 <bottom>5</bottom>
                             </margins>
                         </label>
-                        <flow-layout direction="horizontal">
-                            <children>
-                                <button id="export-to-litematica">
-                                    <text translate="true">hyacinth.export_to_litematica</text>
-                                </button>
-                            </children>
-                            <gap>2</gap>
-                        </flow-layout>
                     </children>
                     <sizing>
                         <horizontal method="fill">50</horizontal>

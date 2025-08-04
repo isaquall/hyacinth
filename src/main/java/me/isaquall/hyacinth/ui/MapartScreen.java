@@ -112,7 +112,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
             redrawImage();
         }, RENDER_PIPELINE.staircaseMode()));
 
-//        rootComponent.childById(ButtonComponent.class, "export-to-litematica").onPress(button -> RENDER_PIPELINE.exportToLitematica());
+        schematicSettings.child(Components.button(Text.translatable("hyacinth.export_to_litematica"), button -> RENDER_PIPELINE.exportToLitematica()));
 
         rootComponent.childById(TextureComponent.class, "download-button").mouseDown().subscribe((x, y, button) -> {
             (new File(MinecraftClient.getInstance().runDirectory + File.separator + "hyacinth" + File.separator)).mkdirs();
@@ -170,6 +170,8 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
                     this.client.setScreen(new CropScreen(this, image));
                 } else {
                     RENDER_PIPELINE.baseImage(image);
+                    RENDER_PIPELINE.mapHeight(image.getHeight() / 128);
+                    RENDER_PIPELINE.mapWidth(image.getWidth() / 128);
                     redrawImage();
                 }
             } catch (IOException e) {
@@ -241,5 +243,11 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
     public static MapartPipeline renderPipeline() {
         return RENDER_PIPELINE;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        RENDER_PIPELINE.clearData();
     }
 }

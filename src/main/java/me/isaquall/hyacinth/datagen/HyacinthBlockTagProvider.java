@@ -22,7 +22,8 @@ public class HyacinthBlockTagProvider extends FabricTagProvider.BlockTagProvider
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         FabricTagProvider<Block>.FabricTagBuilder builder = getOrCreateTagBuilder(REQUIRES_SUPPORT)
-                .add(Blocks.SNOW);
+                .add(Blocks.SNOW)
+                .add(Blocks.GLOW_LICHEN);
 
         for (Block block : Registries.BLOCK) {
             if (block instanceof FallingBlock fallingBlock) {

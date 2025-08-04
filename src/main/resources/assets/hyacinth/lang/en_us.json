@@ -231,9 +231,6 @@
   "hyacinth.blue_noise_rgb_4": [
     { "text": "Blue Noise (RGB 4x4)" }
   ],
-  "hyacinth.export_type": [
-    { "text": "Export As:" }
-  ],
   "hyacinth.support_mode.never": [
     { "text": "Never" }
   ],

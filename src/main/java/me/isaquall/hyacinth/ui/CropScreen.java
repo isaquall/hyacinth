@@ -57,7 +57,7 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
     private TextBoxComponent cropYDisplay;
     private int imageWidth; // (Not measured in units of 128)
     private int imageHeight;
-    private Observable<Color> color = Observable.of(Color.BLUE);
+    private final Observable<Color> color = Observable.of(Color.BLUE);
 
     public CropScreen(MapartScreen parent, BufferedImage originalImage) {
         super(FlowLayout.class, DataSource.asset(Identifier.of("hyacinth", "crop_ui_model")));
@@ -119,8 +119,6 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
             return height;
         }));
 
-        resizeOriginalImageContainer.child(Components.button(Text.translatable("hyacinth.continue"), button -> this.close()));
-
         resizeOriginalImageContainer.child(
                 Containers.horizontalFlow(Sizing.content(), Sizing.content())
                         .child(Components.label(Text.translatable("hyacinth.pad_color")).margins(Insets.top(4).withRight(1)))
@@ -141,6 +139,8 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         color.observe(color -> {
             if (Objects.equals(resizingStrategy.translatableName(), "hyacinth.pad")) setImageSize(imageWidth, imageHeight);
         });
+
+        resizeOriginalImageContainer.child(Components.button(Text.translatable("hyacinth.continue"), button -> this.close()));
 
         buildMapPreview(this.originalImage);
     }

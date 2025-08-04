@@ -3,6 +3,7 @@ package me.isaquall.hyacinth.client;
 import me.isaquall.hyacinth.block_palette.BlockPalette;
 import me.isaquall.hyacinth.dithering.DitheringStrategy;
 import me.isaquall.hyacinth.dithering.algorithm.DitheringAlgorithm;
+import me.isaquall.hyacinth.schematic.SchematicWriter;
 import me.isaquall.hyacinth.schematic.StaircaseMode;
 import me.isaquall.hyacinth.schematic.SupportMode;
 import me.isaquall.hyacinth.util.ImageUtils;
@@ -28,7 +29,7 @@ public class MapartPipeline {
 
     private BufferedImage baseImage = null;
     private DitheringStrategy ditheringStrategy = DitheringStrategy.DITHERING_STRATEGIES.get(Identifier.of("hyacinth", "dithering_strategy/floyd_steinberg"));
-    private int mapWidth = 1;
+    private int mapWidth = 1; // Measured in units of 128
     private int mapHeight = 1;
     private SupportMode supportMode = SupportMode.ONLY_REQUIRED;
     private StaircaseMode staircaseMode = StaircaseMode.CLASSIC;
@@ -56,9 +57,9 @@ public class MapartPipeline {
         return finishedImage;
     }
 
-//    public void exportToLitematica() {
-//        SchematicWriter.createSchematic(pixels, file.getName(), supportMode, staircaseMode);
-//    }
+    public void exportToLitematica() {
+        SchematicWriter.createSchematic(selectedBlocks, pixels, supportMode, staircaseMode);
+    }
 
     public DitheringStrategy ditheringStrategy() {
         return ditheringStrategy;
@@ -126,5 +127,10 @@ public class MapartPipeline {
 
     public void baseImage(BufferedImage baseImage) {
         this.baseImage = baseImage;
+    }
+
+    public void clearData() {
+        this.pixels = null;
+        this.finishedImage = null;
     }
 }

@@ -121,7 +121,7 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
 
         resizeOriginalImageContainer.child(
                 Containers.horizontalFlow(Sizing.content(), Sizing.content())
-                        .child(Components.label(Text.translatable("hyacinth.pad_color")).margins(Insets.top(4).withRight(1)))
+                        .child(Components.label(Text.translatable("hyacinth.pad_color")).margins(Insets.top(4).withRight(3)))
                         .child(Components.box(Sizing.fixed(16), Sizing.fixed(16)).color(color.get()).fill(true).configure(component -> {
                             if (!(component instanceof BoxComponent box)) return;
                             box.mouseDown().subscribe((x, y, i) -> {
@@ -226,6 +226,6 @@ public class CropScreen extends BaseUIModelScreen<FlowLayout> {
         this.client.setScreen(parent);
         MapartScreen.renderPipeline().mapHeight(cropHeight);
         MapartScreen.renderPipeline().mapWidth(cropWidth);
-        this.parent.redrawImage();
+        this.parent.reprocessImage();
     }
 }

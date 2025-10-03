@@ -66,11 +66,8 @@ public class DitheringStrategyReloadListener implements SimpleSynchronousResourc
     }
 
     private static void error(String source, Exception e) {
-        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
-                Text.translatable("hyacinth.error"),
-                Text.translatable("hyacinth.failed_to_read_dithering_strategy", source),
-                Text.of(e.toString()))));
-        throw new RuntimeException(e);
+        HyacinthToast.error(Text.translatable("hyacinth.failed_to_read_dithering_strategy", source));
+        throw new RuntimeException("Hyacinth failed to read a dithering strategy. " + e);
     }
 
     @Override

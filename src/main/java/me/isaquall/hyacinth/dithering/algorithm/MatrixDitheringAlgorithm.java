@@ -101,9 +101,7 @@ public class MatrixDitheringAlgorithm extends BaseDitheringAlgorithm {
     }
 
     private static void error(String id, String message) {
-        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
-                Text.translatable("hyacinth.error"),
-                Text.translatable("hyacinth.failed_to_create_matrix_dithering_algorithm", id),
-                Text.of(message))));
+        HyacinthToast.error(Text.translatable("hyacinth.failed_to_create_matrix_dithering_algorithm", id));
+        System.out.println("Hyacinth failed to create a matrix dithering algorithm. " + message);
     }
 }

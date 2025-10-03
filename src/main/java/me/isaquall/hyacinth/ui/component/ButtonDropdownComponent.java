@@ -11,6 +11,7 @@ import io.wispforest.owo.ui.core.Insets;
 import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 import me.isaquall.hyacinth.mixin.DropdownComponentAccessor;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,10 @@ public class ButtonDropdownComponent<T> extends FlowLayout {
         this.child(Components.button(Text.translatable(translatableName.apply(current)), button -> {
             if (!button.active) return;
             button.active(false);
+
+            int textWidth = MinecraftClient.getInstance().textRenderer.getWidth(button.getMessage());
+            int buttonWidth = button.getWidth();
+            System.out.println("textWidth: " + textWidth + ", buttonWidth: " + buttonWidth);
 
             DropdownComponent dropdown = new ExtendedDropdownComponent(Sizing.content(5), button.x(), button.y() + 20);
             OverlayContainer<DropdownComponent> overlay = Containers.overlay(dropdown);
@@ -49,6 +54,7 @@ public class ButtonDropdownComponent<T> extends FlowLayout {
                     flow.removeChild(overlay);
                     writeFunction.accept(option);
                     button.setMessage(name);
+                    button.setWidth(MinecraftClient.getInstance().textRenderer.getWidth(name) + 8);
                     button.active(true);
                 });
 

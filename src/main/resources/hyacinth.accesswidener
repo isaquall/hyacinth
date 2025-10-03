@@ -1,4 +1,9 @@
-accessWidener v1 named
+accessWidener v2 named
 
 accessible field net/minecraft/client/texture/SpriteAtlasHolder atlas Lnet/minecraft/client/texture/SpriteAtlasTexture;
 accessible field net/minecraft/client/texture/SpriteContents image Lnet/minecraft/client/texture/NativeImage;
+accessible method net/minecraft/item/FilledMapItem allocateMapId (Lnet/minecraft/world/World;IIIZZLnet/minecraft/registry/RegistryKey;)Lnet/minecraft/component/type/MapIdComponent;
+accessible field net/minecraft/world/PersistentStateManager loadedStates Ljava/util/Map;
+accessible field net/minecraft/item/map/MapState updateTrackersByPlayer Ljava/util/Map;
+accessible field net/minecraft/item/map/MapState updateTrackers Ljava/util/List;
+accessible method net/minecraft/item/map/MapState$PlayerUpdateTracker <init> (Lnet/minecraft/item/map/MapState;Lnet/minecraft/entity/player/PlayerEntity;)V

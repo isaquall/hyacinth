@@ -75,10 +75,7 @@ public class BlockPaletteReloadListener implements SimpleSynchronousResourceRelo
     }
 
     public static void error(String id, Exception e) {
-        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(List.of(
-                Text.translatable("hyacinth.error"),
-                Text.translatable("hyacinth.failed_to_load_palette", id),
-                Text.of(e.getMessage()))));
+        HyacinthToast.error(Text.translatable("hyacinth.failed_to_load_palette", id));
         throw new RuntimeException("Hyacinth failed to read a block palette. " + e);
     }
 }

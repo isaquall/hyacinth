@@ -22,12 +22,12 @@ public abstract class ResizingStrategy {
 
                 @Override
                 public String translatableName() {
-                    return "hyacinth." + method.name();
+                    return "hyacinth." + method.name().toLowerCase();
                 }
 
                 @Override
                 public String translatableTooltip() {
-                    return "hyacinth." + method.name() + "_tooltip";
+                    return "hyacinth." + method.name().toLowerCase() + "_tooltip";
                 }
             });
         }

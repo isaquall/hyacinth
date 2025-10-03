@@ -62,6 +62,7 @@
                                                             </sizing>
                                                         </text-box>
                                                     </children>
+                                                    <gap>3</gap>
                                                 </flow-layout>
                                             </children>
                                         </flow-layout>
@@ -75,6 +76,7 @@
                                                 <vertical method="fill">100</vertical>
                                                 <horizontal method="fill">100</horizontal>
                                             </sizing>
+                                            <gap>3</gap>
                                         </flow-layout>
                                     </children>
                                     <sizing>

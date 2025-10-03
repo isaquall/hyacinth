@@ -9,6 +9,7 @@ import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +19,25 @@ public class HyacinthToast implements Toast {
     private final List<OrderedText> message;
     private final TextRenderer textRenderer;
     private final int width;
+    private final int outlineColor;
 
-    public HyacinthToast(List<Text> message) {
+    public HyacinthToast(int outlineColor, List<Text> message) {
         this.textRenderer = MinecraftClient.getInstance().textRenderer;
         this.width = Math.min(240, TextOps.width(textRenderer, message) + 8);
         this.message = this.wrap(message);
+        this.outlineColor = outlineColor;
+    }
+
+    public static void error(Text... args) {
+        List<Text> message = new ArrayList<>(List.of(args));
+        message.addFirst(Text.translatable("hyacinth.error"));
+        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(0xA7FF0000, message));
+    }
+
+    public static void info(Text... args) {
+        List<Text> message = new ArrayList<>(List.of(args));
+        message.addFirst(Text.translatable("hyacinth.hyacinth_info"));
+        MinecraftClient.getInstance().getToastManager().add(new HyacinthToast(0xA700AAAA, message));
     }
 
     private Visibility visibility = Visibility.HIDE;
@@ -42,7 +57,7 @@ public class HyacinthToast implements Toast {
         var owoContext = OwoUIDrawContext.of(context);
 
         owoContext.fill(0, 0, this.getWidth(), this.getHeight(), 0x77000000);
-        owoContext.drawRectOutline(0, 0, this.getWidth(), this.getHeight(), 0xA7FF0000);
+        owoContext.drawRectOutline(0, 0, this.getWidth(), this.getHeight(), outlineColor);
 
         int xOffset = this.getWidth() / 2 - this.textRenderer.getWidth(this.message.get(0)) / 2;
         owoContext.drawTextWithShadow(this.textRenderer, this.message.get(0), 4 + xOffset, 4, 0xFFFFFF);

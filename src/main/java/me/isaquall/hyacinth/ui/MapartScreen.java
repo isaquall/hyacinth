@@ -1,9 +1,7 @@
 package me.isaquall.hyacinth.ui;
 
 import io.wispforest.owo.ui.base.BaseUIModelScreen;
-import io.wispforest.owo.ui.component.Components;
-import io.wispforest.owo.ui.component.SmallCheckboxComponent;
-import io.wispforest.owo.ui.component.TextureComponent;
+import io.wispforest.owo.ui.component.*;
 import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.GridLayout;
@@ -27,6 +25,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -40,7 +39,8 @@ import java.io.IOException;
 @Environment(EnvType.CLIENT)
 public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standardize component id's with either - or _ :(
 
-    private GridLayout rootComponent;
+    private static GridLayout rootComponent;
+    private static double previewScale = 1;
     
     private static final RenderEffectWrapper.RenderEffect HIGHLIGHT = new RenderEffectWrapper.RenderEffect() {
         @Override
@@ -55,22 +55,28 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
     private static final RenderEffectWrapper.RenderEffect GRID = new RenderEffectWrapper.RenderEffect() {
         @Override
         public void setup(Component component, DrawContext drawContext, float v, float v1) {
+            ParentComponent parent = component.parent();
+            if (parent == null) return;
+            drawContext.enableScissor(parent.x(), parent.y(), parent.x() + parent.width(), parent.y() + parent.height());
             for (int x = 0; x < RENDER_PIPELINE.mapWidth(); x++) {
                 for (int y = 0; y < RENDER_PIPELINE.mapHeight(); y++) {
-                    drawContext.drawBorder(component.x() + (128 * x), component.y() + (128 * y), 128, 128, Color.BLUE.argb());
+                    drawContext.drawBorder((int) (component.x() + (128 * x * previewScale)), (int) (component.y() + (128 * y * previewScale)), (int) (128 * previewScale), (int) (128 * previewScale), Color.BLUE.argb());
                     for (int i = 1; i < 8; i++) {
-                        drawContext.drawVerticalLine(component.x() + (128 * x) + (16 * i), component.y() + (128 * y), component.y() + (128 * (y + 1)), Color.RED.argb());
-                        drawContext.drawHorizontalLine(component.x() + (128 * x), component.x() + (128 * (x + 1)), component.y() + (128 * y) + (16 * i), Color.RED.argb());
+                        drawContext.drawVerticalLine((int) (component.x() + (128 * x * previewScale) + (16 * i * previewScale)), (int) (component.y() + (128 * y * previewScale)), (int) (component.y() + (128 * (y + 1) * previewScale)), Color.RED.argb());
+                        drawContext.drawHorizontalLine((int) (component.x() + (128 * x * previewScale)), (int) (component.x() + (128 * (x + 1) * previewScale)), (int) (component.y() + (128 * y * previewScale) + (16 * i * previewScale)), Color.RED.argb());
                     }
                 }
             }
         }
 
         @Override
-        public void cleanup(Component component, DrawContext drawContext, float v, float v1) { }
+        public void cleanup(Component component, DrawContext drawContext, float v, float v1) {
+            drawContext.disableScissor();
+        }
     };
 
     private static final MapartPipeline RENDER_PIPELINE = new MapartPipeline();
+    private static final Identifier MAP_PREVIEW_ID = Identifier.of("hyacinth", "map_preview");
 
     public MapartScreen() {
         super(GridLayout.class, DataSource.asset(Identifier.of("hyacinth", "mapart_ui_model")));
@@ -94,14 +100,14 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
 
         rootComponent.childById(SmallCheckboxComponent.class, "checkbox_better_color").onChanged().subscribe(checked -> {
             RENDER_PIPELINE.betterColor(checked);
-            redrawImage();
+            reprocessImage();
         });
 
         FlowLayout renderSettings = rootComponent.childById(FlowLayout.class, "render-settings");
 
         renderSettings.child(new ButtonDropdownComponent<>(renderSettings, "hyacinth.dithering_strategy", DitheringStrategy.DITHERING_STRATEGIES.values().toArray(new DitheringStrategy[]{}), DitheringStrategy::translatableName, null, strategy -> {
             RENDER_PIPELINE.ditheringStrategy(strategy);
-            redrawImage();
+            reprocessImage();
         }, RENDER_PIPELINE.ditheringStrategy()));
 
         FlowLayout schematicSettings = rootComponent.childById(FlowLayout.class, "schematic-settings");
@@ -109,7 +115,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
         schematicSettings.child(new ButtonDropdownComponent<>(schematicSettings, "hyacinth.support_mode", SupportMode.values(), SupportMode::translatableName, SupportMode::translatableTooltip, RENDER_PIPELINE::supportMode, RENDER_PIPELINE.supportMode()));
         schematicSettings.child(new ButtonDropdownComponent<>(schematicSettings, "hyacinth.staircase_mode", StaircaseMode.values(), StaircaseMode::translatableName, StaircaseMode::translatableTooltip, mode -> {
             RENDER_PIPELINE.staircaseMode(mode);
-            redrawImage();
+            reprocessImage();
         }, RENDER_PIPELINE.staircaseMode()));
 
         schematicSettings.child(Components.button(Text.translatable("hyacinth.export_to_litematica"), button -> RENDER_PIPELINE.exportToLitematica()));
@@ -126,20 +132,32 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
             return true;
         });
 
-        redrawImage();
+        LabelComponent sizeLabel = rootComponent.childById(LabelComponent.class, "size-label").text(Text.translatable("hyacinth.size_percent", Math.round(previewScale * 100)).formatted(Formatting.ITALIC, Formatting.GRAY));
+        SlimSliderComponent slider = rootComponent.childById(SlimSliderComponent.class, "size-slider");
+        slider.cursorStyle(CursorStyle.HORIZONTAL_RESIZE);
+        slider.onChanged().subscribe(value -> {
+            previewScale = value;
+            sizeLabel.text(Text.translatable("hyacinth.size_percent", Math.round(previewScale * 100)).formatted(Formatting.ITALIC, Formatting.GRAY));
+            redrawImage();
+        });
+
+        reprocessImage();
     }
 
-    public void redrawImage() {
-        Identifier id = Identifier.of("hyacinth", "map_preview");
+    public void reprocessImage() {
         if (RENDER_PIPELINE.baseImage() == null) {
             NativeImage defaultImage = MinecraftClient.getInstance().getGuiAtlasManager().getSprite(Identifier.of("hyacinth", "select_image")).getContents().image;
             RENDER_PIPELINE.baseImage(ImageUtils.nativeToBufferedImage(defaultImage));
         }
         BufferedImage image = RENDER_PIPELINE.process();
         if (image == null) return;
-        ImageUtils.bufferedToNativeImage(image, id);
+        ImageUtils.bufferedToNativeImage(image, MAP_PREVIEW_ID);
 
-        RenderEffectWrapper<Component> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(id, 0, 0, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128, RENDER_PIPELINE.mapWidth() * 128, RENDER_PIPELINE.mapHeight() * 128).id("map-preview"));
+        redrawImage();
+    }
+
+    public void redrawImage() {
+        RenderEffectWrapper<Component> mapPreviewEffectWrapper = Containers.renderEffect(Components.texture(MAP_PREVIEW_ID, 0, 0, (int) (RENDER_PIPELINE.mapWidth() * 128 * previewScale), (int) (RENDER_PIPELINE.mapHeight() * 128 * previewScale), (int) (RENDER_PIPELINE.mapWidth() * 128 * previewScale), (int) (RENDER_PIPELINE.mapHeight() * 128 * previewScale)).id("map-preview"));
         mapPreviewEffectWrapper.id("map-preview-effect-wrapper");
         mapPreviewEffectWrapper.positioning(Positioning.relative(50, 50));
         FlowLayout previewContainer = rootComponent.childById(FlowLayout.class, "map-preview-container");
@@ -172,7 +190,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
                     RENDER_PIPELINE.baseImage(image);
                     RENDER_PIPELINE.mapHeight(image.getHeight() / 128);
                     RENDER_PIPELINE.mapWidth(image.getWidth() / 128);
-                    redrawImage();
+                    reprocessImage();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -216,7 +234,7 @@ public class MapartScreen extends BaseUIModelScreen<GridLayout> { // TODO standa
                     blockStateRenderWrapper.effect(HIGHLIGHT);
                     RENDER_PIPELINE.selectedBlocks().put(palette, blockState);
                     UISounds.playButtonSound();
-                    redrawImage();
+                    reprocessImage();
                     return true;
                 });
             }

@@ -72,7 +72,7 @@
     "text": "None"
   },
   "hyacinth.error": {
-    "text": "Hyacinth Error",
+    "text": "[Hyacinth Error]",
     "color": "red"
   },
   "hyacinth.failed_to_load_palette": [
@@ -289,14 +289,16 @@
     { "text": "Download map preview" }
   ],
   "hyacinth.failed_to_add_block": [
-    { "text": "[Hyacinth] Failed to add block to a palette. Check your logs!", "color": "red" }
+    { "text": "Failed to add block to a palette. Check your logs!", "color": "red" }
   ],
   "hyacinth.successfully_added_new_block": [
-    { "text": "[Hyacinth] Successfully added block to the palette.", "color": "green" }
+    { "text": "Successfully added ", "color": "green" },
+    { "index": 0, "color": "white" },
+    { "text": " to the palette.", "color": "green" }
   ],
   "hyacinth.block_already_exists_in_palette": [
-    { "text": "[Hyacinth] This block already exists in the ", "color": "red" },
-    { "index": 0 },
+    { "text": "This block already exists in the ", "color": "red" },
+    { "index": 0, "color":  "white"},
     { "text": " palette!", "color": "red" }
   ],
   "hyacinth.crop_settings": [
@@ -337,5 +339,16 @@
   ],
   "hyacinth.automatic": [
     { "text": "Automatic" }
-  ]
+  ],
+  "hyacinth.size_percent": [
+    { "text": "Size: " },
+    { "index": 0 },
+    { "text": "%" }
+  ],
+  "hyacinth.hyacinth_info": [
+    { "text": "[Hyacinth Info]", "color": "dark_aqua" }
+  ],
+  "hyacinth.pad_color": {
+    "text": "Pad Color:"
+  }
 }
